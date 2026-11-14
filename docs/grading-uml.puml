@@ -1,0 +1,22 @@
+@startuml
+title Grading policies
+skinparam classAttributeIconSize 0
+interface GradingStrategy {
+  +calculate(assessments): Optional<GradeResult>
+  +name(): String
+}
+class WeightedGrading
+class PassFailGrading
+class GradeMath {
+  {static} average(assessments): double
+}
+class GradeResult {
+  +score(): double
+  +label(): String
+}
+GradingStrategy <|.. WeightedGrading
+GradingStrategy <|.. PassFailGrading
+WeightedGrading ..> GradeMath
+PassFailGrading ..> GradeMath
+GradingStrategy ..> GradeResult
+@enduml
