@@ -1,0 +1,33 @@
+@startuml
+title Course construction and enrollment
+skinparam classAttributeIconSize 0
+class Course {
+  -code: String
+  -title: String
+  -teacherId: String
+  -capacity: int
+  +builder(code, title): Builder
+  +grading(): GradingStrategy
+}
+class "Course.Builder" as Builder {
+  +teacher(id): Builder
+  +capacity(value): Builder
+  +grading(value): Builder
+  +build(): Course
+}
+interface GradingStrategy
+class Teacher
+class Student
+class Enrollment {
+  +studentId(): String
+  +courseCode(): String
+  +assessments(): List
+}
+class Assessment
+Builder ..> Course : creates
+Course --> GradingStrategy : uses
+Course --> Teacher : teacherId
+Enrollment --> Student : studentId
+Enrollment --> Course : courseCode
+Enrollment "1" *-- "0..*" Assessment
+@enduml
