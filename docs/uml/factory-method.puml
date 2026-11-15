@@ -1,0 +1,46 @@
+@startuml factory-method
+!pragma layout smetana
+title Factory Method - person creation
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+abstract class PersonCreator {
+  +register(id: String, name: String): Person
+  #{abstract} create(id: String, name: String): Person
+}
+class StudentCreator {
+  #create(id: String, name: String): Person
+}
+class TeacherCreator {
+  #create(id: String, name: String): Person
+}
+abstract class Person {
+  -id: String
+  -name: String
+  +id(): String
+  +name(): String
+  +{abstract} role(): Role
+}
+class Student {
+  +role(): Role
+}
+class Teacher {
+  +role(): Role
+}
+enum Role {
+  STUDENT
+  TEACHER
+}
+class SchoolFacade {
+  +register(access, role, id, name): Person
+}
+
+PersonCreator <|-- StudentCreator
+PersonCreator <|-- TeacherCreator
+Person <|-- Student
+Person <|-- Teacher
+StudentCreator ..> Student : creates
+TeacherCreator ..> Teacher : creates
+Person --> Role
+SchoolFacade ..> PersonCreator : chooses by role
+@enduml

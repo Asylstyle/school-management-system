@@ -1,0 +1,43 @@
+@startuml decorator
+!pragma layout smetana
+title Decorator - access permissions
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+interface Access {
+  +allows(p: Permission): boolean
+  +label(): String
+  +require(p: Permission)
+}
+class ReadOnlyAccess {
+  +allows(p: Permission): boolean
+  +label(): String
+}
+abstract class AccessDecorator {
+  #wrapped: Access
+  +allows(p: Permission): boolean
+  +label(): String
+}
+class RegistrarAccess {
+  +allows(p: Permission): boolean
+  +label(): String
+}
+class GradingAccess {
+  +allows(p: Permission): boolean
+  +label(): String
+}
+enum Permission {
+  VIEW
+  MANAGE_PEOPLE
+  MANAGE_COURSES
+  ENROLL
+  RECORD_GRADES
+}
+
+Access <|.. ReadOnlyAccess
+Access <|.. AccessDecorator
+AccessDecorator o-- Access : wrapped
+AccessDecorator <|-- RegistrarAccess
+AccessDecorator <|-- GradingAccess
+Access ..> Permission
+@enduml

@@ -1,0 +1,41 @@
+@startuml strategy
+!pragma layout smetana
+title Strategy - grading policies
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+interface GradingStrategy {
+  +calculate(items: List<Assessment>): Optional<GradeResult>
+  +name(): String
+}
+class WeightedGrading {
+  +calculate(items): Optional<GradeResult>
+  +name(): String
+}
+class PassFailGrading {
+  +calculate(items): Optional<GradeResult>
+  +name(): String
+}
+class GradeMath {
+  ~{static} average(items: List<Assessment>): double
+}
+class GradeResult {
+  +score(): double
+  +label(): String
+  +display(): String
+}
+class Course {
+  +grading(): GradingStrategy
+}
+class SchoolFacade {
+  +result(e: Enrollment): Optional<GradeResult>
+}
+
+GradingStrategy <|.. WeightedGrading
+GradingStrategy <|.. PassFailGrading
+WeightedGrading ..> GradeMath
+PassFailGrading ..> GradeMath
+GradingStrategy ..> GradeResult
+Course --> GradingStrategy
+SchoolFacade ..> Course
+@enduml

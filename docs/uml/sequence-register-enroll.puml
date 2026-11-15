@@ -1,0 +1,31 @@
+@startuml sequence-register-enroll
+title Registering a student and enrolling in a course
+skinparam shadowing false
+autonumber
+
+actor User
+participant ConsoleApp
+participant SchoolFacade
+participant "access: Access" as Access
+participant StudentCreator
+participant SchoolStore
+participant EventBus
+
+User -> ConsoleApp : 3 Add person (student)
+ConsoleApp -> SchoolFacade : register(access, STUDENT, id, name)
+SchoolFacade -> Access : require(MANAGE_PEOPLE)
+SchoolFacade -> StudentCreator : register(id, name)
+StudentCreator -> StudentCreator : create(id, name)
+StudentCreator --> SchoolFacade : Student
+SchoolFacade -> SchoolStore : check id is free, save person
+SchoolFacade -> EventBus : publish(PERSON_REGISTERED)
+ConsoleApp --> User : Person registered.
+
+User -> ConsoleApp : 6 Enroll student
+ConsoleApp -> SchoolFacade : enroll(access, studentId, courseCode)
+SchoolFacade -> Access : require(ENROLL)
+SchoolFacade -> SchoolStore : check student, duplicate, capacity
+SchoolFacade -> SchoolStore : save Enrollment
+SchoolFacade -> EventBus : publish(STUDENT_ENROLLED)
+ConsoleApp --> User : Enrollment completed.
+@enduml

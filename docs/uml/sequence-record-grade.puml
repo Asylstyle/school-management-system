@@ -1,0 +1,32 @@
+@startuml sequence-record-grade
+title Recording a grade
+skinparam shadowing false
+autonumber
+
+actor User
+participant ConsoleApp
+participant SchoolFacade
+participant "access: Access" as Access
+participant SchoolStore
+participant Enrollment
+participant EventBus
+participant ActivityLog
+
+User -> ConsoleApp : 8 Record grade
+ConsoleApp -> SchoolFacade : recordGrade(access, studentId, courseCode, assessment)
+SchoolFacade -> Access : require(RECORD_GRADES)
+alt permission missing
+  Access --> SchoolFacade : SecurityException
+  SchoolFacade --> ConsoleApp : exception
+  ConsoleApp --> User : Cannot complete: Permission required
+else permission granted
+  SchoolFacade -> SchoolStore : find enrollment
+  SchoolStore --> SchoolFacade : enrollment
+  SchoolFacade -> Enrollment : assessments(), check the title is new
+  SchoolFacade -> Enrollment : add(assessment)
+  SchoolFacade -> EventBus : publish(GRADE_RECORDED)
+  EventBus -> ActivityLog : onEvent(event)
+  SchoolFacade --> ConsoleApp
+  ConsoleApp --> User : Grade recorded.
+end
+@enduml

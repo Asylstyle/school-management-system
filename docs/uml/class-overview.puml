@@ -1,0 +1,69 @@
+@startuml class-overview
+!pragma layout smetana
+title SchoolDesk - class diagram
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+hide empty members
+
+class ConsoleApp {
+  -access: Access
+  +main(args: String[])
+  ~run()
+}
+class SchoolFacade {
+  +register(access, role, id, name): Person
+  +addCourse(access, course)
+  +enroll(access, studentId, courseCode)
+  +recordGrade(access, studentId, courseCode, assessment)
+  +result(enrollment): Optional<GradeResult>
+}
+class SchoolStore
+class EventBus
+interface SchoolListener
+class ActivityLog
+abstract class PersonCreator
+class StudentCreator
+class TeacherCreator
+abstract class Person
+class Student
+class Teacher
+interface Access
+class ReadOnlyAccess
+abstract class AccessDecorator
+class RegistrarAccess
+class GradingAccess
+class Course
+class "Course.Builder" as CourseBuilder
+interface GradingStrategy
+class WeightedGrading
+class PassFailGrading
+class Enrollment
+class Assessment
+
+ConsoleApp --> SchoolFacade
+ConsoleApp --> Access
+SchoolFacade *-- SchoolStore
+SchoolFacade --> EventBus
+SchoolFacade ..> PersonCreator : uses
+SchoolFacade ..> Access : checks
+EventBus o-- "0..*" SchoolListener
+SchoolListener <|.. ActivityLog
+PersonCreator <|-- StudentCreator
+PersonCreator <|-- TeacherCreator
+Person <|-- Student
+Person <|-- Teacher
+PersonCreator ..> Person : creates
+Access <|.. ReadOnlyAccess
+Access <|.. AccessDecorator
+AccessDecorator o-- Access : wrapped
+AccessDecorator <|-- RegistrarAccess
+AccessDecorator <|-- GradingAccess
+CourseBuilder ..> Course : builds
+Course --> GradingStrategy
+GradingStrategy <|.. WeightedGrading
+GradingStrategy <|.. PassFailGrading
+SchoolStore o-- "0..*" Person
+SchoolStore o-- "0..*" Course
+SchoolStore o-- "0..*" Enrollment
+Enrollment *-- "0..*" Assessment
+@enduml

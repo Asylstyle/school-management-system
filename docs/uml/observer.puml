@@ -1,0 +1,41 @@
+@startuml observer
+!pragma layout smetana
+title Observer - school events
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+class EventBus {
+  -listeners: List<SchoolListener>
+  +subscribe(l: SchoolListener)
+  +unsubscribe(l: SchoolListener)
+  +publish(e: SchoolEvent)
+}
+interface SchoolListener {
+  +onEvent(e: SchoolEvent)
+}
+class ActivityLog {
+  -events: List<SchoolEvent>
+  +onEvent(e: SchoolEvent)
+  +events(): List<SchoolEvent>
+}
+class SchoolEvent {
+  +type(): EventType
+  +message(): String
+  +at(): Instant
+}
+enum EventType {
+  PERSON_REGISTERED
+  COURSE_CREATED
+  STUDENT_ENROLLED
+  GRADE_RECORDED
+}
+class SchoolFacade {
+  -emit(type, message)
+}
+
+EventBus o-- "0..*" SchoolListener
+SchoolListener <|.. ActivityLog
+EventBus ..> SchoolEvent
+SchoolEvent --> EventType
+SchoolFacade --> EventBus : publishes
+@enduml

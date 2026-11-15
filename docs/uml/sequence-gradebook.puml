@@ -1,0 +1,26 @@
+@startuml sequence-gradebook
+title Showing the gradebook
+skinparam shadowing false
+autonumber
+
+actor User
+participant ConsoleApp
+participant SchoolFacade
+participant Course
+participant "grading: GradingStrategy" as Strategy
+participant GradeMath
+
+User -> ConsoleApp : 7 Gradebook
+ConsoleApp -> SchoolFacade : enrollments()
+loop for each enrollment
+  ConsoleApp -> SchoolFacade : result(enrollment)
+  SchoolFacade -> Course : grading()
+  Course --> SchoolFacade : strategy of this course
+  SchoolFacade -> Strategy : calculate(assessments)
+  Strategy -> GradeMath : average(assessments)
+  GradeMath --> Strategy : score
+  Strategy --> SchoolFacade : GradeResult(score, label)
+  SchoolFacade --> ConsoleApp : Optional<GradeResult>
+end
+ConsoleApp --> User : student, course, score / label
+@enduml

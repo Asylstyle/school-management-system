@@ -1,0 +1,37 @@
+@startuml facade
+!pragma layout smetana
+title Facade - SchoolFacade
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+hide empty members
+
+class ConsoleApp
+class CsvExport
+class SchoolFacade {
+  +register(access, role, id, name): Person
+  +addCourse(access, course)
+  +enroll(access, studentId, courseCode)
+  +recordGrade(access, studentId, courseCode, assessment)
+  +people(): List<Person>
+  +courses(): List<Course>
+  +enrollments(): List<Enrollment>
+  +result(e: Enrollment): Optional<GradeResult>
+}
+class SchoolStore
+class EventBus
+abstract class PersonCreator
+interface Access
+class Course
+class Enrollment
+interface GradingStrategy
+
+ConsoleApp --> SchoolFacade
+CsvExport ..> SchoolFacade
+SchoolFacade *-- SchoolStore
+SchoolFacade --> EventBus
+SchoolFacade ..> PersonCreator
+SchoolFacade ..> Access
+SchoolFacade ..> Course
+SchoolFacade ..> Enrollment
+SchoolFacade ..> GradingStrategy
+@enduml

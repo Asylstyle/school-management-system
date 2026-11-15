@@ -1,0 +1,40 @@
+@startuml builder
+!pragma layout smetana
+title Builder - course construction
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+class Course {
+  -code: String
+  -title: String
+  -teacherId: String
+  -capacity: int
+  -grading: GradingStrategy
+  -Course(b: Builder)
+  +{static} builder(code, title): Builder
+  +code(): String
+  +title(): String
+  +teacherId(): String
+  +capacity(): int
+  +grading(): GradingStrategy
+}
+class "Course.Builder" as Builder {
+  -code: String
+  -title: String
+  -teacherId: String
+  -capacity: int = 25
+  -grading: GradingStrategy
+  +teacher(id: String): Builder
+  +capacity(value: int): Builder
+  +grading(value: GradingStrategy): Builder
+  +build(): Course
+}
+interface GradingStrategy
+class ConsoleApp
+class DemoData
+
+Builder ..> Course : creates
+Course --> GradingStrategy
+ConsoleApp ..> Builder
+DemoData ..> Builder
+@enduml
