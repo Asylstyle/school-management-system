@@ -8,8 +8,8 @@
 | Operational pattern integration | Console workflows and `SchoolTests`, `ConsoleTests` |
 | Introduction, body, conclusion and further work | `project-report.pdf` |
 | Java code | `src/main/java/school` and report excerpts |
-| UML diagrams | `architecture.md`, `course-uml.puml`, `grading-uml.puml` and report |
-| Application evidence | Demo execution output and report figures |
+| UML diagrams | `uml/*.puml` sources, rendered images in `images/`, `architecture.md` and report |
+| Screenshots of the application | `screenshots/` and report section 7 |
 | PDF report and zipped source | Packaged deliverables |
 
 Moodle submission and the in-person presentation are separate activities.

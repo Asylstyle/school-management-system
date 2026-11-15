@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SchoolDesk - Final Project Report</title>
+<style>
+  @page { size: A4; margin: 20mm 18mm 20mm 22mm; @bottom-center { content: counter(page); font-family: "Times New Roman", serif; font-size: 11pt; } }
+  @page :first { @bottom-center { content: none; } }
+  body { font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.4; color: #000; margin: 0; }
+  h1 { font-size: 16pt; margin: 20pt 0 10pt; break-after: avoid; }
+  h1.pb { break-before: page; margin-top: 0; }
+  h2 { font-size: 13.5pt; margin: 16pt 0 6pt; break-after: avoid; }
+  h3 { font-size: 12pt; margin: 12pt 0 4pt; break-after: avoid; }
+  p { margin: 0 0 8pt; text-align: justify; }
+  ul, ol { margin: 0 0 8pt 0; padding-left: 22pt; }
+  li { margin-bottom: 2pt; }
+  code { font-family: Consolas, "Courier New", monospace; font-size: 10.5pt; }
+  pre { font-family: Consolas, "Courier New", monospace; font-size: 8.3pt; line-height: 1.25; border: 0.6pt solid #888; background: #f6f6f6; padding: 6pt 7pt; margin: 4pt 0 4pt; white-space: pre-wrap; word-break: break-word; }
+  table { border-collapse: collapse; width: 100%; margin: 6pt 0 10pt; font-size: 11pt; }
+  th, td { border: 0.6pt solid #000; padding: 4pt 6pt; text-align: left; vertical-align: top; }
+  th { background: #e6e6e6; }
+  figure { margin: 8pt 0 12pt; text-align: center; break-inside: avoid; }
+  figure img { max-width: 100%; max-height: 205mm; }
+  figure.shot img { max-width: 80%; max-height: 112mm; }
+  figure.shot.tall img { max-height: 160mm; }
+  figure.wide img { max-width: 100%; }
+  figcaption, .cap { font-size: 10.5pt; font-style: italic; text-align: center; margin: 3pt 0 10pt; }
+  .listing { break-inside: avoid; }
+  .listing.long { break-inside: auto; }
+  .title { height: 250mm; display: flex; flex-direction: column; justify-content: space-between; text-align: center; }
+  .title .uni { font-size: 16pt; font-weight: bold; }
+  .title .mid .name { font-size: 24pt; font-weight: bold; margin-bottom: 8pt; }
+  .title .mid .sub { font-size: 16pt; }
+  .title .mid .kind { font-size: 14pt; margin-bottom: 28pt; }
+  .title .team { text-align: right; font-size: 13pt; line-height: 1.6; }
+  .title .city { font-size: 13pt; }
+  .toc { list-style: none; padding-left: 0; }
+  .toc li { margin-bottom: 4pt; }
+  .toc .l2 { padding-left: 18pt; }
+  h1.first { break-before: auto; }
+</style>
+</head>
+<body>
+
+<section class="title">
+  <div>
+    <div class="uni">Astana IT University</div>
+    <div style="font-size:13pt; margin-top:6pt;">Course: Software Design Patterns</div>
+  </div>
+  <div class="mid">
+    <div class="kind">FINAL PROJECT REPORT</div>
+    <div class="name">SchoolDesk</div>
+    <div class="sub">School Management System</div>
+  </div>
+  <div class="team">
+    <b>Group:</b> SE-2526<br>
+    <b>Team members:</b><br>
+    Kuandykov Adilzhan<br>
+    Yussupov Nurlan<br>
+    Amangeldi Assylzhan
+  </div>
+  <div class="city">Astana, 2026</div>
+</section>
+
+<h1 class="pb">Contents</h1>
+<ol class="toc">
+  <li>1. Introduction</li>
+  <li>2. Team and distribution of work</li>
+  <li>3. Project description</li>
+  <li>4. Architecture</li>
+  <li>5. Design patterns</li>
+  <li class="l2">5.1 Factory Method</li>
+  <li class="l2">5.2 Decorator</li>
+  <li class="l2">5.3 Builder</li>
+  <li class="l2">5.4 Strategy</li>
+  <li class="l2">5.5 Observer</li>
+  <li class="l2">5.6 Facade</li>
+  <li>6. How the patterns work together</li>
+  <li>7. Screenshots of the application</li>
+  <li>8. Testing</li>
+  <li>9. Conclusion</li>
+  <li>10. Further work</li>
+  <li>References</li>
+</ol>
+
+<h1 class="pb">1. Introduction</h1>
+<p>For the final project we chose the topic "School Management System" from the list of suggested topics. The topic proposes three patterns: Factory to create staff and student profiles, Observer for notifications and Decorator to add roles or permissions. The project must contain at least six patterns, so we added Builder, Strategy and Facade.</p>
+<p>The result is SchoolDesk, a console application written in Java 17. With it a school office can register students and teachers, create courses, enroll students in courses, record grades and see the final result of every student in every course. The gradebook can be exported to a CSV file.</p>
+<p>The goal of the project was not to build a big system, but to show how several design patterns work inside one program and help each other. That is why we did not use a database, a web framework or external libraries. All data is stored in memory, and the user works with a text menu. This keeps the code small, so every class can be opened and explained during the defense.</p>
+<p>The report has the following structure. Section 2 shows how the work was divided between the team members. Section 3 describes what the application does and its rules. Section 4 gives the general architecture. Section 5 explains each of the six patterns with a UML diagram and Java code. Section 6 shows how the patterns are connected. Section 7 contains screenshots of the running program, and section 8 describes testing. The report ends with the conclusion and further work.</p>
+
+<h1>2. Team and distribution of work</h1>
+<p>The team consists of three students of group SE-2526. Each student implemented two design patterns and the classes around them. The table below shows the distribution.</p>
+<table>
+  <tr><th style="width:27%">Student</th><th style="width:23%">Patterns</th><th>Classes and other work</th></tr>
+  <tr><td>Kuandykov Adilzhan</td><td>Factory Method, Decorator</td><td><code>Person</code>, <code>Student</code>, <code>Teacher</code>, <code>Role</code>, <code>PersonCreator</code>, <code>StudentCreator</code>, <code>TeacherCreator</code>, <code>Permission</code>, <code>Access</code>, <code>ReadOnlyAccess</code>, <code>AccessDecorator</code>, <code>RegistrarAccess</code>, <code>GradingAccess</code>, <code>Validation</code>; tests for profiles and access.</td></tr>
+  <tr><td>Yussupov Nurlan</td><td>Builder, Strategy</td><td><code>Course</code> with <code>Course.Builder</code>, <code>Enrollment</code>, <code>Assessment</code>, <code>GradingStrategy</code>, <code>WeightedGrading</code>, <code>PassFailGrading</code>, <code>GradeMath</code>, <code>GradeResult</code>; tests for grading, courses and enrollments; UML diagrams.</td></tr>
+  <tr><td>Amangeldi Assylzhan</td><td>Observer, Facade</td><td><code>EventBus</code>, <code>SchoolListener</code>, <code>ActivityLog</code>, <code>SchoolEvent</code>, <code>EventType</code>, <code>SchoolFacade</code>, <code>SchoolStore</code>, <code>ConsoleApp</code>, <code>ConsoleInput</code>, <code>CsvExport</code>, <code>DemoData</code>; integration tests, build scripts.</td></tr>
+</table>
+<p>The source code is kept in one Git repository: <code>https://github.com/Asylstyle/school-management-system</code>.</p>
+
+<h1>3. Project description</h1>
+<h2>3.1 Functions of the application</h2>
+<p>After start the program loads sample data (two teachers, three students, three courses) and shows the main menu. The menu has the following commands:</p>
+<table>
+  <tr><th style="width:8%">No.</th><th style="width:24%">Command</th><th>What it does</th></tr>
+  <tr><td>1</td><td>Overview</td><td>Shows the number of students, teachers, courses and enrollments.</td></tr>
+  <tr><td>2</td><td>People</td><td>Lists all registered people with their ID and role.</td></tr>
+  <tr><td>3</td><td>Add person</td><td>Registers a new student or teacher.</td></tr>
+  <tr><td>4</td><td>Courses</td><td>Lists courses with the teacher, used seats and grading policy.</td></tr>
+  <tr><td>5</td><td>Add course</td><td>Creates a course with a teacher, capacity and grading policy.</td></tr>
+  <tr><td>6</td><td>Enroll student</td><td>Enrolls a student in a course.</td></tr>
+  <tr><td>7</td><td>Gradebook</td><td>Shows all assessments and the final result for each enrollment.</td></tr>
+  <tr><td>8</td><td>Record grade</td><td>Adds an assessment (title, score, weight) for a student in a course.</td></tr>
+  <tr><td>9</td><td>Activity</td><td>Shows the log of all successful operations with time.</td></tr>
+  <tr><td>10</td><td>Access mode</td><td>Switches between viewer, registrar, grading and admin permissions.</td></tr>
+  <tr><td>11</td><td>Export CSV</td><td>Saves the gradebook to a CSV file.</td></tr>
+  <tr><td>0</td><td>Exit</td><td>Closes the program.</td></tr>
+</table>
+
+<h2>3.2 Rules</h2>
+<ul>
+  <li>IDs of people and codes of courses are unique. A teacher and a student cannot have the same ID.</li>
+  <li>IDs and names cannot be empty. Spaces at the beginning and at the end are removed.</li>
+  <li>A course must have a registered teacher and a capacity of at least 1. If the capacity is not given, it is 25.</li>
+  <li>Only a registered student can be enrolled. The same student cannot be enrolled in the same course twice. When all seats are taken, the course is full.</li>
+  <li>A score is a number from 0 to 100. A weight is a positive number. Weights are relative, so they do not have to give 100 in total.</li>
+  <li>The title of an assessment must be unique for one student in one course (letter case is ignored).</li>
+  <li>The final score is the weighted average: sum(score × weight) / sum(weight). For example, Project 94 with weight 60 and Quiz 82 with weight 40 give (94×60 + 82×40) / 100 = 89.2.</li>
+  <li>With the "Weighted letters" policy the score is converted to a letter: A from 90, B from 80, C from 70, D from 60, otherwise F. With the "Pass / Fail" policy the result is PASS from 60 and FAIL below.</li>
+  <li>If a student has no assessments in a course, the gradebook shows "Not graded".</li>
+  <li>Every changing operation needs a permission. Without it the operation is rejected.</li>
+</ul>
+
+<h2>3.3 Project structure and how to run</h2>
+<pre>src/main/java/school/    application classes (33 files)
+src/test/java/school/    tests (12 files)
+docs/                    report, UML sources, diagrams, screenshots
+build.ps1                build script for Windows
+build.sh                 build script for Linux and macOS
+.github/workflows/       automatic build and test on GitHub</pre>
+<p>The project needs only JDK 17 or newer. On Windows the commands are <code>./build.ps1 -Run</code> to start the program and <code>./build.ps1 -Test</code> to run the tests. On Linux and macOS the commands are <code>sh build.sh run</code> and <code>sh build.sh test</code>.</p>
+
+<h1>4. Architecture</h1>
+<p>The program has three levels. The first level is the console (<code>ConsoleApp</code>, <code>ConsoleInput</code>). It only reads the input and prints the result. The second level is <code>SchoolFacade</code>. It receives all requests from the console, checks permissions and rules, saves data and publishes events. The third level contains the domain classes: people, courses, enrollments, assessments, grading policies, permissions and events.</p>
+<p>Figure 1 shows the main classes and the relations between them. All six patterns are visible on this diagram: the creators of people (Factory Method), the access classes (Decorator), <code>Course.Builder</code> (Builder), <code>GradingStrategy</code> with two implementations (Strategy), <code>EventBus</code> with listeners (Observer) and <code>SchoolFacade</code> in the center (Facade).</p>
+<figure class="wide"><img src="images/class-overview.png" alt="Class diagram"><figcaption>Figure 1. Class diagram of the application</figcaption></figure>
+
+<h1 class="pb">5. Design patterns</h1>
+<p>This section describes each pattern in the same order: the problem, how the pattern solves it in our project, the UML diagram, the code and the place where the pattern is used.</p>
+
+<h2>5.1 Factory Method (Kuandykov Adilzhan)</h2>
+<h3>Problem</h3>
+<p>The system works with two kinds of people: students and teachers. More kinds can appear later, for example administrators or parents. If the facade creates objects with <code>new Student(...)</code> and <code>new Teacher(...)</code> directly, the common steps of registration (checking the ID and the name) have to be repeated for every kind.</p>
+<h3>Solution</h3>
+<p>The abstract class <code>PersonCreator</code> has the method <code>register</code>. It checks the input and then calls the abstract method <code>create</code>. This method is the factory method. The subclasses <code>StudentCreator</code> and <code>TeacherCreator</code> override it and return the concrete object. The code that calls <code>register</code> works only with the type <code>Person</code> and does not know which class was created.</p>
+<figure><img src="images/factory-method.png" alt="Factory Method" style="max-width:82%"><figcaption>Figure 2. Factory Method: creators and products</figcaption></figure>
+<h3>Code</h3>
+<div class="listing"><pre>package school;
+
+public abstract class PersonCreator {
+    public final Person register(String id, String name) {
+        return create(Validation.text(id, &quot;ID&quot;), Validation.text(name, &quot;Name&quot;));
+    }
+    protected abstract Person create(String id, String name);
+}</pre><div class="cap">Listing 1. PersonCreator.java, the creator with the factory method</div></div>
+<div class="listing"><pre>package school;
+
+public final class StudentCreator extends PersonCreator {
+    @Override protected Person create(String id, String name) { return new Student(id, name); }
+}</pre><pre>package school;
+
+public final class TeacherCreator extends PersonCreator {
+    @Override protected Person create(String id, String name) { return new Teacher(id, name); }
+}</pre><div class="cap">Listing 2. StudentCreator.java and TeacherCreator.java, concrete creators</div></div>
+<div class="listing"><pre>package school;
+
+public abstract class Person {
+    private final String id;
+    private final String name;
+    protected Person(String id, String name) {
+        this.id = Validation.text(id, &quot;ID&quot;);
+        this.name = Validation.text(name, &quot;Name&quot;);
+    }
+    public final String id() { return id; }
+    public final String name() { return name; }
+    public abstract Role role();
+    @Override public String toString() { return name + &quot; (&quot; + id + &quot;)&quot;; }
+}</pre><pre>package school;
+
+public final class Student extends Person {
+    public Student(String id, String name) { super(id, name); }
+    @Override public Role role() { return Role.STUDENT; }
+}</pre><div class="cap">Listing 3. Person.java and Student.java, the product and one concrete product (Teacher is the same with Role.TEACHER)</div></div>
+<h3>Where it is used</h3>
+<p>The facade chooses a creator by the role and calls <code>register</code>. After that it works with the result as with a <code>Person</code>.</p>
+<div class="listing"><pre>public Person register(Access access, Role role, String id, String name) {
+    access.require(Permission.MANAGE_PEOPLE);
+    PersonCreator creator = switch (Objects.requireNonNull(role)) {
+        case STUDENT -&gt; new StudentCreator(); case TEACHER -&gt; new TeacherCreator();
+    };
+    Person person = creator.register(id, name);
+    if (store.people.containsKey(person.id())) throw new IllegalArgumentException(&quot;This person ID already exists&quot;);
+    store.people.put(person.id(), person);
+    emit(EventType.PERSON_REGISTERED, person.name() + &quot; registered as &quot; + person.role());
+    return person;
+}</pre><div class="cap">Listing 4. SchoolFacade.register uses the creators</div></div>
+<p>To add a new kind of person we need a new subclass of <code>Person</code>, a new creator and one more line in the <code>switch</code>. The checks in <code>register</code> stay in one place.</p>
+
+<h2>5.2 Decorator (Kuandykov Adilzhan)</h2>
+<h3>Problem</h3>
+<p>Different users of the system can do different things. A viewer can only read. A registrar adds people and courses and enrolls students. A grading operator records grades. An administrator can do everything. If we make a separate class for every combination, the number of classes grows quickly, and a new permission set needs a new class again.</p>
+<h3>Solution</h3>
+<p>The interface <code>Access</code> answers the question "is this permission allowed?". The basic object is <code>ReadOnlyAccess</code>, it allows only viewing. <code>AccessDecorator</code> implements the same interface and keeps another <code>Access</code> object inside. <code>RegistrarAccess</code> and <code>GradingAccess</code> extend the decorator. Each of them adds its own permissions and passes all other questions to the wrapped object. Because decorators and the basic object have the same interface, they can be put one into another in any order.</p>
+<figure><img src="images/decorator.png" alt="Decorator" style="max-width:80%"><figcaption>Figure 3. Decorator: access permissions</figcaption></figure>
+<h3>Code</h3>
+<div class="listing"><pre>package school;
+
+public interface Access {
+    boolean allows(Permission permission);
+    String label();
+    default void require(Permission permission) {
+        if (!allows(permission)) throw new SecurityException(&quot;Permission required: &quot; + permission);
+    }
+}</pre><pre>package school;
+
+public final class ReadOnlyAccess implements Access {
+    @Override public boolean allows(Permission permission) { return permission == Permission.VIEW; }
+    @Override public String label() { return &quot;Viewer&quot;; }
+}</pre><div class="cap">Listing 5. Access.java and ReadOnlyAccess.java, the component and the basic implementation</div></div>
+<div class="listing"><pre>package school;
+
+import java.util.Objects;
+public abstract class AccessDecorator implements Access {
+    protected final Access wrapped;
+    protected AccessDecorator(Access wrapped) { this.wrapped = Objects.requireNonNull(wrapped); }
+    @Override public boolean allows(Permission permission) { return wrapped.allows(permission); }
+    @Override public String label() { return wrapped.label(); }
+}</pre><div class="cap">Listing 6. AccessDecorator.java, the base decorator</div></div>
+<div class="listing"><pre>package school;
+
+public final class RegistrarAccess extends AccessDecorator {
+    public RegistrarAccess(Access wrapped) { super(wrapped); }
+    @Override public boolean allows(Permission p) {
+        return p == Permission.MANAGE_PEOPLE || p == Permission.MANAGE_COURSES || p == Permission.ENROLL || super.allows(p);
+    }
+    @Override public String label() { return wrapped.label() + &quot; + Registrar&quot;; }
+}</pre><pre>package school;
+
+public final class GradingAccess extends AccessDecorator {
+    public GradingAccess(Access wrapped) { super(wrapped); }
+    @Override public boolean allows(Permission p) { return p == Permission.RECORD_GRADES || super.allows(p); }
+    @Override public String label() { return wrapped.label() + &quot; + Grading&quot;; }
+}</pre><div class="cap">Listing 7. RegistrarAccess.java and GradingAccess.java, concrete decorators</div></div>
+<h3>Where it is used</h3>
+<p>The administrator is not a separate class. It is a viewer wrapped in two decorators: <code>new GradingAccess(new RegistrarAccess(new ReadOnlyAccess()))</code>. The menu command "Access mode" builds the access object for the chosen mode:</p>
+<div class="listing"><pre>private void changeAccess() {
+    access = switch (input.text(&quot;Mode (viewer/registrar/grading/admin)&quot;)) {
+        case &quot;viewer&quot; -&gt; new ReadOnlyAccess();
+        case &quot;registrar&quot; -&gt; new RegistrarAccess(new ReadOnlyAccess());
+        case &quot;grading&quot; -&gt; new GradingAccess(new ReadOnlyAccess());
+        case &quot;admin&quot; -&gt; DemoData.administrator();
+        default -&gt; throw new IllegalArgumentException(&quot;Unknown access mode&quot;);
+    };
+}</pre><div class="cap">Listing 8. ConsoleApp.changeAccess combines decorators</div></div>
+<p>The label of the access object is also built by the decorators. That is why the menu shows "Viewer + Registrar + Grading" for the administrator (see Figure 16).</p>
+
+<h2>5.3 Builder (Yussupov Nurlan)</h2>
+<h3>Problem</h3>
+<p>A course has five fields: code, title, teacher, capacity and grading policy. Two of them have default values. A constructor with five parameters is hard to read, and it is easy to mix up the order of the string parameters. Also the course should not change after it is created, so setters are not suitable.</p>
+<h3>Solution</h3>
+<p><code>Course</code> has a private constructor and a nested class <code>Course.Builder</code>. The required values (code and title) are given to the method <code>Course.builder</code>. The other values are set with the methods <code>teacher</code>, <code>capacity</code> and <code>grading</code>. Each of them returns the builder, so the calls can be written in a chain. The method <code>build</code> creates the course. All checks are in the constructor of <code>Course</code>, so a course with wrong data cannot be created. All fields of <code>Course</code> are <code>final</code>.</p>
+<figure><img src="images/builder.png" alt="Builder" style="max-height:122mm"><figcaption>Figure 4. Builder: construction of a course</figcaption></figure>
+<h3>Code</h3>
+<div class="listing"><pre>package school;
+
+import java.util.Objects;
+public final class Course {
+    private final String code, title, teacherId;
+    private final int capacity;
+    private final GradingStrategy grading;
+    private Course(Builder b) {
+        code = Validation.text(b.code, &quot;Course code&quot;);
+        title = Validation.text(b.title, &quot;Course title&quot;);
+        teacherId = Validation.text(b.teacherId, &quot;Teacher ID&quot;);
+        capacity = Validation.positive(b.capacity, &quot;Capacity&quot;);
+        grading = Objects.requireNonNull(b.grading, &quot;Grading policy is required&quot;);
+    }
+    public String code() { return code; }
+    public String title() { return title; }
+    public String teacherId() { return teacherId; }
+    public int capacity() { return capacity; }
+    public GradingStrategy grading() { return grading; }
+    @Override public String toString() { return code + &quot; - &quot; + title; }
+    public static Builder builder(String code, String title) { return new Builder(code, title); }
+    public static final class Builder {
+        private final String code, title;
+        private String teacherId;
+        private int capacity = 25;
+        private GradingStrategy grading = new WeightedGrading();
+        private Builder(String code, String title) { this.code = code; this.title = title; }
+        public Builder teacher(String id) { teacherId = id; return this; }
+        public Builder capacity(int value) { capacity = value; return this; }
+        public Builder grading(GradingStrategy value) { grading = value; return this; }
+        public Course build() { return new Course(this); }
+    }
+}</pre><div class="cap">Listing 9. Course.java with the nested Builder</div></div>
+<h3>Where it is used</h3>
+<p>The sample data creates courses with the builder. The first course uses the default grading policy, the third one sets another policy:</p>
+<div class="listing"><pre>school.addCourse(admin, Course.builder(&quot;CS101&quot;, &quot;Computer Science&quot;).teacher(&quot;T001&quot;).capacity(20).build());
+school.addCourse(admin, Course.builder(&quot;MAT101&quot;, &quot;Applied Mathematics&quot;).teacher(&quot;T002&quot;).capacity(24).build());
+school.addCourse(admin, Course.builder(&quot;ART101&quot;, &quot;Creative Workshop&quot;).teacher(&quot;T001&quot;).capacity(12).grading(new PassFailGrading()).build());</pre><div class="cap">Listing 10. Courses in DemoData.java</div></div>
+<p>The menu command "Add course" reads the values from the console and passes them to the builder:</p>
+<div class="listing"><pre>private void addCourse() {
+    access.require(Permission.MANAGE_COURSES);
+    String code = input.text(&quot;Code&quot;);
+    String title = input.text(&quot;Title&quot;);
+    String teacher = input.text(&quot;Teacher ID&quot;);
+    int capacity = input.integer(&quot;Capacity&quot;);
+    GradingStrategy grading = switch (input.text(&quot;Grading (letters/pass)&quot;)) {
+        case &quot;letters&quot; -&gt; new WeightedGrading();
+        case &quot;pass&quot; -&gt; new PassFailGrading();
+        default -&gt; throw new IllegalArgumentException(&quot;Choose letters or pass&quot;);
+    };
+    school.addCourse(access, Course.builder(code, title).teacher(teacher).capacity(capacity).grading(grading).build());
+    System.out.println(&quot;Course created.&quot;);
+}</pre><div class="cap">Listing 11. ConsoleApp.addCourse</div></div>
+
+<h2>5.4 Strategy (Yussupov Nurlan)</h2>
+<h3>Problem</h3>
+<p>Courses are graded in different ways. Most courses give a letter from A to F, but some courses (for example a creative workshop) give only pass or fail. If this choice is written with <code>if</code> inside the gradebook, every new way of grading changes the existing code.</p>
+<h3>Solution</h3>
+<p>The interface <code>GradingStrategy</code> has the method <code>calculate</code>. It takes the list of assessments and returns the result with a score and a label. There are two implementations: <code>WeightedGrading</code> returns a letter and <code>PassFailGrading</code> returns PASS or FAIL. Every <code>Course</code> keeps its own strategy object. The code that shows the gradebook does not know which strategy is used. Both strategies use the same helper <code>GradeMath.average</code> for the weighted average, so the formula is written once.</p>
+<figure><img src="images/strategy.png" alt="Strategy" style="max-width:88%"><figcaption>Figure 5. Strategy: grading policies</figcaption></figure>
+<h3>Code</h3>
+<div class="listing"><pre>package school;
+
+import java.util.List;
+import java.util.Optional;
+public interface GradingStrategy {
+    Optional&lt;GradeResult&gt; calculate(List&lt;Assessment&gt; assessments);
+    String name();
+}</pre><div class="cap">Listing 12. GradingStrategy.java, the strategy interface</div></div>
+<div class="listing"><pre>package school;
+
+import java.util.List;
+import java.util.Optional;
+public final class WeightedGrading implements GradingStrategy {
+    @Override public Optional&lt;GradeResult&gt; calculate(List&lt;Assessment&gt; items) {
+        if (items.isEmpty()) return Optional.empty();
+        double score = GradeMath.average(items);
+        String letter = score &gt;= 90 ? &quot;A&quot; : score &gt;= 80 ? &quot;B&quot; : score &gt;= 70 ? &quot;C&quot; : score &gt;= 60 ? &quot;D&quot; : &quot;F&quot;;
+        return Optional.of(new GradeResult(score, letter));
+    }
+    @Override public String name() { return &quot;Weighted letters&quot;; }
+}</pre><div class="cap">Listing 13. WeightedGrading.java</div></div>
+<div class="listing"><pre>package school;
+
+import java.util.List;
+import java.util.Optional;
+public final class PassFailGrading implements GradingStrategy {
+    @Override public Optional&lt;GradeResult&gt; calculate(List&lt;Assessment&gt; items) {
+        if (items.isEmpty()) return Optional.empty();
+        double score = GradeMath.average(items);
+        return Optional.of(new GradeResult(score, score &gt;= 60 ? &quot;PASS&quot; : &quot;FAIL&quot;));
+    }
+    @Override public String name() { return &quot;Pass / Fail&quot;; }
+}</pre><div class="cap">Listing 14. PassFailGrading.java</div></div>
+<div class="listing"><pre>package school;
+
+import java.util.List;
+final class GradeMath {
+    private GradeMath() {}
+    static double average(List&lt;Assessment&gt; items) {
+        double maxWeight = items.stream().mapToDouble(Assessment::weight).max().orElseThrow();
+        double total = 0, weights = 0;
+        for (Assessment a : items) {
+            double normalized = a.weight() / maxWeight;
+            total += a.score() * normalized;
+            weights += normalized;
+        }
+        return total / weights;
+    }
+}</pre><div class="cap">Listing 15. GradeMath.java, the weighted average</div></div>
+<p>In <code>GradeMath</code> every weight is divided by the largest weight before the sum. The proportion between the weights stays the same, and the sum does not become too large when the weights are very big numbers.</p>
+<h3>Where it is used</h3>
+<p>The facade takes the strategy from the course and asks it to calculate the result:</p>
+<div class="listing"><pre>public Optional&lt;GradeResult&gt; result(Enrollment enrollment) {
+    return course(enrollment.courseCode()).grading().calculate(enrollment.assessments());
+}</pre><div class="cap">Listing 16. SchoolFacade.result</div></div>
+<p>In Figure 15 the same gradebook shows "89.2 / B" for a course with letters and "91.0 / PASS" for a pass/fail course. To add a new policy (for example a 5-point scale) we only need one new class that implements <code>GradingStrategy</code>.</p>
+
+<h2>5.5 Observer (Amangeldi Assylzhan)</h2>
+<h3>Problem</h3>
+<p>After each operation (registration, new course, enrollment, new grade) other parts of the system may need to know about it. In our program this is the activity log. Later it can be a notification for a student or a teacher. The facade should not call each of these parts directly, because then every new receiver changes the facade.</p>
+<h3>Solution</h3>
+<p><code>EventBus</code> is the subject. It keeps a list of listeners and has the methods <code>subscribe</code>, <code>unsubscribe</code> and <code>publish</code>. <code>SchoolListener</code> is the observer interface with one method <code>onEvent</code>. <code>ActivityLog</code> is a concrete observer that saves every event. The facade creates a <code>SchoolEvent</code> (type, message, time) after each successful operation and gives it to the bus. The bus sends the event to all listeners. If the operation was rejected, no event is published.</p>
+<figure><img src="images/observer.png" alt="Observer" style="max-height:112mm"><figcaption>Figure 6. Observer: events of the school</figcaption></figure>
+<h3>Code</h3>
+<div class="listing"><pre>package school;
+
+@FunctionalInterface
+public interface SchoolListener { void onEvent(SchoolEvent event); }</pre><pre>package school;
+
+import java.time.Instant;
+public record SchoolEvent(EventType type, String message, Instant at) {
+    public SchoolEvent {
+        java.util.Objects.requireNonNull(type);
+        java.util.Objects.requireNonNull(at);
+        message = Validation.text(message, &quot;Event message&quot;);
+    }
+}</pre><div class="cap">Listing 17. SchoolListener.java and SchoolEvent.java, the observer interface and the event</div></div>
+<div class="listing"><pre>package school;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+public final class EventBus {
+    private final List&lt;SchoolListener&gt; listeners = new ArrayList&lt;&gt;();
+    private final Consumer&lt;RuntimeException&gt; onFailure;
+    public EventBus() { this(e -&gt; System.err.println(&quot;Notification failed: &quot; + e.getMessage())); }
+    public EventBus(Consumer&lt;RuntimeException&gt; onFailure) { this.onFailure = Objects.requireNonNull(onFailure); }
+    public void subscribe(SchoolListener listener) {
+        Objects.requireNonNull(listener);
+        if (!listeners.contains(listener)) listeners.add(listener);
+    }
+    public void unsubscribe(SchoolListener listener) { listeners.remove(listener); }
+    public void publish(SchoolEvent event) {
+        Objects.requireNonNull(event);
+        for (SchoolListener listener : List.copyOf(listeners)) {
+            try { listener.onEvent(event); }
+            catch (RuntimeException e) {
+                try { onFailure.accept(e); } catch (RuntimeException ignored) { /* Keep delivering committed events. */ }
+            }
+        }
+    }
+}</pre><div class="cap">Listing 18. EventBus.java, the subject</div></div>
+<div class="listing"><pre>package school;
+
+import java.util.ArrayList;
+import java.util.List;
+public final class ActivityLog implements SchoolListener {
+    private final List&lt;SchoolEvent&gt; events = new ArrayList&lt;&gt;();
+    @Override public void onEvent(SchoolEvent event) { events.add(event); }
+    public List&lt;SchoolEvent&gt; events() { return List.copyOf(events); }
+}</pre><div class="cap">Listing 19. ActivityLog.java, the concrete observer</div></div>
+<p>Two details of <code>EventBus</code>: the same listener is not added twice, and if one listener throws an exception, the other listeners still receive the event.</p>
+<h3>Where it is used</h3>
+<p>The log is subscribed to the bus when the program starts. The facade publishes events through the private method <code>emit</code>.</p>
+<div class="listing"><pre>public static void main(String[] args) {
+    EventBus events = new EventBus();
+    ActivityLog log = new ActivityLog();
+    events.subscribe(log);
+    SchoolFacade school = new SchoolFacade(events);
+    DemoData.load(school);
+    ...
+}</pre><div class="cap">Listing 20. Subscription in ConsoleApp.main</div></div>
+<div class="listing"><pre>private void emit(EventType type, String message) { events.publish(new SchoolEvent(type, message, clock.instant())); }</pre><div class="cap">Listing 21. SchoolFacade.emit</div></div>
+<p>The menu command "Activity" prints the events saved by the log (Figure 17). Because <code>SchoolListener</code> has only one method, a new listener can also be written as a lambda.</p>
+
+<h2>5.6 Facade (Amangeldi Assylzhan)</h2>
+<h3>Problem</h3>
+<p>One user action touches many classes. For example, to record a grade the program must check the permission, find the enrollment, check the title of the assessment, save it and publish an event. If the console does all these steps itself, the menu code becomes long, and the same steps must be repeated in tests and in the CSV export.</p>
+<h3>Solution</h3>
+<p><code>SchoolFacade</code> gives one simple entry point to the whole subsystem. It has four changing operations (<code>register</code>, <code>addCourse</code>, <code>enroll</code>, <code>recordGrade</code>) and several reading methods (<code>people</code>, <code>courses</code>, <code>enrollments</code>, <code>result</code>). Inside it works with the storage, the creators, the access object, the courses with their strategies and the event bus. The console, the CSV export and the tests call only the facade.</p>
+<figure><img src="images/facade.png" alt="Facade" style="max-width:100%"><figcaption>Figure 7. Facade and the classes behind it</figcaption></figure>
+<h3>Code</h3>
+<div class="listing long"><pre>public final class SchoolFacade {
+    private final SchoolStore store = new SchoolStore();
+    private final EventBus events;
+    private final Clock clock;
+    public SchoolFacade(EventBus events) { this(events, Clock.systemUTC()); }
+    public SchoolFacade(EventBus events, Clock clock) {
+        this.events = Objects.requireNonNull(events); this.clock = Objects.requireNonNull(clock);
+    }
+    public Person register(Access access, Role role, String id, String name) {
+        access.require(Permission.MANAGE_PEOPLE);
+        PersonCreator creator = switch (Objects.requireNonNull(role)) {
+            case STUDENT -&gt; new StudentCreator(); case TEACHER -&gt; new TeacherCreator();
+        };
+        Person person = creator.register(id, name);
+        if (store.people.containsKey(person.id())) throw new IllegalArgumentException(&quot;This person ID already exists&quot;);
+        store.people.put(person.id(), person);
+        emit(EventType.PERSON_REGISTERED, person.name() + &quot; registered as &quot; + person.role());
+        return person;
+    }
+    public void addCourse(Access access, Course course) {
+        access.require(Permission.MANAGE_COURSES);
+        Objects.requireNonNull(course);
+        if (!(store.people.get(course.teacherId()) instanceof Teacher))
+            throw new IllegalArgumentException(&quot;Select a registered teacher&quot;);
+        if (store.courses.containsKey(course.code())) throw new IllegalArgumentException(&quot;This course code already exists&quot;);
+        store.courses.put(course.code(), course);
+        emit(EventType.COURSE_CREATED, course.code() + &quot; created: &quot; + course.title());
+    }
+    public void enroll(Access access, String studentId, String courseCode) {
+        access.require(Permission.ENROLL);
+        Course course = course(courseCode);
+        if (!(store.people.get(studentId) instanceof Student)) throw new IllegalArgumentException(&quot;Select a registered student&quot;);
+        var key = new SchoolStore.Key(studentId, courseCode);
+        if (store.enrollments.containsKey(key)) throw new IllegalArgumentException(&quot;Student is already enrolled&quot;);
+        if (enrolledCount(courseCode) &gt;= course.capacity()) throw new IllegalArgumentException(&quot;Course is full&quot;);
+        store.enrollments.put(key, new Enrollment(studentId, courseCode));
+        emit(EventType.STUDENT_ENROLLED, store.people.get(studentId).name() + &quot; enrolled in &quot; + courseCode);
+    }
+    public void recordGrade(Access access, String studentId, String courseCode, Assessment assessment) {
+        access.require(Permission.RECORD_GRADES);
+        Enrollment enrollment = enrollment(studentId, courseCode);
+        Objects.requireNonNull(assessment);
+        if (enrollment.assessments().stream().anyMatch(a -&gt; a.title().equalsIgnoreCase(assessment.title())))
+            throw new IllegalArgumentException(&quot;An assessment with this title already exists for this enrollment&quot;);
+        enrollment.add(assessment);
+        emit(EventType.GRADE_RECORDED, assessment.title() + &quot;: &quot; + assessment.score() + &quot; for &quot; + store.people.get(studentId).name() + &quot; / &quot; + courseCode);
+    }</pre><div class="cap">Listing 22. SchoolFacade.java, fields and the four operations</div></div>
+<p>Each operation has the same order: permission check, rule checks, saving, event. The reading methods return copies of the lists, so the caller cannot change the data inside the facade.</p>
+<h3>Where it is used</h3>
+<p>The menu command for recording a grade only reads the input and makes one call to the facade:</p>
+<div class="listing"><pre>private void recordGrade() {
+    access.require(Permission.RECORD_GRADES);
+    String student = input.text(&quot;Student ID&quot;);
+    String course = input.text(&quot;Course code&quot;);
+    Assessment assessment = new Assessment(input.text(&quot;Assessment title&quot;), input.decimal(&quot;Score (0-100)&quot;), input.decimal(&quot;Weight&quot;));
+    school.recordGrade(access, student, course, assessment);
+    System.out.println(&quot;Grade recorded.&quot;);
+}</pre><div class="cap">Listing 23. ConsoleApp.recordGrade</div></div>
+
+<h1>6. How the patterns work together</h1>
+<p>The patterns are not separate examples. They are parts of one flow. The table shows the connections.</p>
+<table>
+  <tr><th style="width:30%">Connection</th><th>Description</th></tr>
+  <tr><td>Facade and Factory Method</td><td><code>SchoolFacade.register</code> chooses a creator and gets a <code>Person</code> from it.</td></tr>
+  <tr><td>Facade and Decorator</td><td>Every changing operation of the facade starts with <code>access.require(...)</code>. The access object is a chain of decorators.</td></tr>
+  <tr><td>Facade and Builder</td><td><code>SchoolFacade.addCourse</code> accepts a <code>Course</code> that was made by <code>Course.Builder</code>.</td></tr>
+  <tr><td>Builder and Strategy</td><td>The builder puts a <code>GradingStrategy</code> into the course. The default is <code>WeightedGrading</code>.</td></tr>
+  <tr><td>Facade and Strategy</td><td><code>SchoolFacade.result</code> takes the strategy from the course and calls <code>calculate</code>.</td></tr>
+  <tr><td>Facade and Observer</td><td>After each successful operation the facade publishes an event to <code>EventBus</code>, and <code>ActivityLog</code> receives it.</td></tr>
+</table>
+<p>The next three sequence diagrams show this on real scenarios. Figure 8 shows registration of a student and enrollment (Facade, Decorator, Factory Method, Observer). Figure 9 shows recording of a grade with both cases of the permission check (Facade, Decorator, Observer). Figure 10 shows how the gradebook is calculated (Facade, Strategy).</p>
+<figure class="wide"><img src="images/sequence-register-enroll.png" alt="Sequence: register and enroll"><figcaption>Figure 8. Sequence diagram: registering a student and enrolling in a course</figcaption></figure>
+<figure class="wide"><img src="images/sequence-record-grade.png" alt="Sequence: record grade"><figcaption>Figure 9. Sequence diagram: recording a grade</figcaption></figure>
+<figure class="wide"><img src="images/sequence-gradebook.png" alt="Sequence: gradebook"><figcaption>Figure 10. Sequence diagram: showing the gradebook</figcaption></figure>
+
+<h1 class="pb">7. Screenshots of the application</h1>
+<p>All screenshots in this section were taken from the program running in the Windows console.</p>
+<figure class="shot"><img src="screenshots/01-start-overview.png" alt=""><figcaption>Figure 11. Start of the program, main menu and the overview</figcaption></figure>
+<figure class="shot"><img src="screenshots/02-people-courses.png" alt=""><figcaption>Figure 12. List of people and list of courses from the sample data</figcaption></figure>
+<figure class="shot"><img src="screenshots/03-add-teacher-course.png" alt=""><figcaption>Figure 13. Adding a teacher (Factory Method) and a new course (Builder). The new course PHY101 appears in the list</figcaption></figure>
+<figure class="shot"><img src="screenshots/04-add-student-enroll.png" alt=""><figcaption>Figure 14. Adding a student and enrolling students. The number of used seats of MAT101 changed from 1 to 3</figcaption></figure>
+<figure class="shot"><img src="screenshots/05-record-grade-gradebook.png" alt=""><figcaption>Figure 15. Recording two grades and the gradebook. Courses with letters and with pass/fail are calculated by different strategies</figcaption></figure>
+<figure class="shot tall"><img src="screenshots/06-access-modes.png" alt=""><figcaption>Figure 16. Access modes (Decorator). A viewer cannot add a person, a registrar cannot record grades, a grading operator cannot enroll students</figcaption></figure>
+<figure class="shot"><img src="screenshots/08-activity-log.png" alt=""><figcaption>Figure 17. Activity log (Observer). The last line is the grade that was recorded just before</figcaption></figure>
+<figure class="shot tall"><img src="screenshots/07-validation.png" alt=""><figcaption>Figure 18. Wrong input is rejected: second enrollment, score above 100, capacity that is not a number, ID that already exists</figcaption></figure>
+<figure class="shot"><img src="screenshots/09-export-csv.png" alt=""><figcaption>Figure 19. Export of the gradebook to a CSV file and the content of the file</figcaption></figure>
+
+<h1 class="pb">8. Testing</h1>
+<p>The project has its own small test runner without external libraries. The class <code>Checks</code> has three methods: <code>equal</code> compares two values, <code>close</code> compares two decimal numbers and <code>fails</code> checks that the code throws the expected exception. The class <code>AllTests</code> runs ten groups of tests one after another. If any check fails, the program stops with an error.</p>
+<table>
+  <tr><th style="width:26%">Test group</th><th>What is checked</th></tr>
+  <tr><td>ProfileTests</td><td>Creators return the right type and role; empty ID or name is rejected; spaces are removed.</td></tr>
+  <tr><td>AccessTests</td><td>Permissions of viewer, registrar, grading and admin; <code>require</code> throws an exception without a permission.</td></tr>
+  <tr><td>AssessmentTests</td><td>Score below 0 or above 100, wrong weight and empty title are rejected.</td></tr>
+  <tr><td>GradeTests</td><td>Weighted average 89.2; borders of the letters (59.99, 60, 70, 80, 90, 100); pass/fail border; empty list gives no result.</td></tr>
+  <tr><td>CourseTests</td><td>Default capacity and grading of the builder; course without a teacher or with capacity 0 is rejected.</td></tr>
+  <tr><td>EnrollmentTests</td><td>The list of assessments returned to the caller cannot be changed.</td></tr>
+  <tr><td>ObserverTests</td><td>A listener is not added twice; unsubscribe works; an error in one listener does not stop the others.</td></tr>
+  <tr><td>SchoolTests</td><td>The facade: duplicate IDs, missing permissions, full course, second enrollment, duplicate assessment title, number of published events.</td></tr>
+  <tr><td>ExportTests</td><td>Content of the CSV text and of the saved file; quotes in cells.</td></tr>
+  <tr><td>ConsoleTests</td><td>A full scenario through the menu: add a student, enroll, record a grade, switch to viewer and get a refusal.</td></tr>
+</table>
+<p>Result of the command <code>./build.ps1 -Test</code>:</p>
+<pre>PASS: 92 checks across 10 test groups</pre>
+<p>The repository also has a GitHub Actions workflow (<code>.github/workflows/java.yml</code>). After every push it builds the project with JDK 17 and runs the tests.</p>
+
+<h1>9. Conclusion</h1>
+<p>In this project we built a console school management system and used six design patterns in it: Factory Method, Decorator, Builder, Strategy, Observer and Facade. Each team member implemented two patterns. The patterns are connected in one program: the facade receives every request, checks the decorated access object, uses the creators and the courses made by the builder, calculates results with the strategy of the course and publishes events to the observers.</p>
+<p>During the work we saw the practical value of the patterns. With Decorator four access modes are made from three small classes. With Strategy a new grading policy is one new class. With Builder the creation of a course is easy to read. With Facade the console code stays short and the tests use the same operations as the user. The main difficulty was to keep the patterns simple and not to add classes that the program does not need.</p>
+
+<h1>10. Further work</h1>
+<ul>
+  <li>Save the data to a file or a database, so that it is not lost after exit.</li>
+  <li>Add login with a password, so that the access mode depends on the user and cannot be changed freely.</li>
+  <li>Allow a teacher to record grades only in their own courses.</li>
+  <li>Add more observers, for example a notification for the student when a new grade is recorded.</li>
+  <li>Add editing and deleting of people, courses and grades.</li>
+  <li>Add new grading policies and new kinds of people (administrator, parent).</li>
+  <li>Add attendance and a timetable.</li>
+  <li>Make a graphical or web interface that uses the same facade.</li>
+</ul>
+
+<h1>References</h1>
+<ol>
+  <li>Gamma E., Helm R., Johnson R., Vlissides J. Design Patterns: Elements of Reusable Object-Oriented Software. Addison-Wesley, 1994.</li>
+  <li>Freeman E., Robson E. Head First Design Patterns, 2nd edition. O'Reilly Media, 2020.</li>
+  <li>Refactoring.Guru. Design Patterns. https://refactoring.guru/design-patterns</li>
+  <li>PlantUML. https://plantuml.com</li>
+</ol>
+
+</body>
+</html>
