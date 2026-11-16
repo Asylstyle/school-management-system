@@ -23,6 +23,7 @@ public final class ConsoleApp {
         events.subscribe(log);
         SchoolFacade school = new SchoolFacade(events);
         DemoData.load(school);
+        events.subscribe(new StudentNotifier(System.out::println));
         ConsoleApp app = new ConsoleApp(school, log, new Scanner(System.in));
         if (args.length > 0 && args[0].equals("--demo")) {
             app.overview();
