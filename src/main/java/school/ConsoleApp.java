@@ -162,15 +162,14 @@ public final class ConsoleApp {
     private void courses() {
         System.out.println("\n--- COURSES ---");
         for (Course course : school.courses(access)) {
-            String line = course.code() + " | " + course.title()
+            System.out.println(course.code() + " | " + course.title()
                     + " | " + school.personName(access, course.teacherId())
                     + " | " + school.enrolledCount(access, course.code()) + "/" + course.capacity() + " seats"
                     + " | " + course.grading().name()
-                    + " | " + course.semester() + ", " + course.credits() + " credits";
+                    + " | " + course.semester() + ", " + course.credits() + " credits");
             if (!course.prerequisites().isEmpty()) {
-                line += " | requires " + String.join(", ", course.prerequisites());
+                System.out.println("  requires: " + String.join(", ", course.prerequisites()));
             }
-            System.out.println(line);
         }
     }
 
