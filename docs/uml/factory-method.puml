@@ -5,26 +5,28 @@ skinparam classAttributeIconSize 0
 skinparam shadowing false
 
 abstract class PersonCreator {
-  +register(id: String, name: String): Person
-  #{abstract} create(id: String, name: String): Person
+  +{abstract} create(id: String, name: String): Person
 }
 class StudentCreator {
-  #create(id: String, name: String): Person
+  +create(id: String, name: String): Person
 }
 class TeacherCreator {
-  #create(id: String, name: String): Person
+  +create(id: String, name: String): Person
 }
 abstract class Person {
   -id: String
   -name: String
+  #Person(id: String, name: String)
   +id(): String
   +name(): String
   +{abstract} role(): Role
 }
 class Student {
+  ~Student(id: String, name: String)
   +role(): Role
 }
 class Teacher {
+  ~Teacher(id: String, name: String)
   +role(): Role
 }
 enum Role {
@@ -36,6 +38,8 @@ class PersonRegistry {
   -people: Map<String, Person>
   +register(role, id, name): Person
   +find(id: String): Person
+  +student(id: String): Person
+  +teacher(id: String): Person
 }
 
 PersonCreator <|-- StudentCreator
@@ -46,4 +50,5 @@ StudentCreator ..> Student : creates
 TeacherCreator ..> Teacher : creates
 Person --> Role
 PersonRegistry o-- "1 per role" PersonCreator
+PersonRegistry o-- "0..*" Person
 @enduml

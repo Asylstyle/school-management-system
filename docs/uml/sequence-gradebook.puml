@@ -6,6 +6,7 @@ autonumber
 actor User
 participant ConsoleApp
 participant SchoolFacade
+participant CourseCatalog
 participant GradingService
 participant Course
 participant "grading: GradingStrategy" as Strategy
@@ -15,6 +16,7 @@ User -> ConsoleApp : 7 Gradebook
 ConsoleApp -> SchoolFacade : enrollments(access)
 loop for each enrollment
   ConsoleApp -> SchoolFacade : result(access, enrollment)
+  SchoolFacade -> CourseCatalog : find(enrollment.courseCode())
   SchoolFacade -> GradingService : result(enrollment, course)
   GradingService -> Course : grading()
   Course --> GradingService : strategy of this course

@@ -9,16 +9,17 @@ participant SchoolFacade
 participant "access: Access" as Access
 participant PersonRegistry
 participant StudentCreator
+participant CourseCatalog
 participant EnrollmentService
+participant GradingService
 participant EventBus
 
 User -> ConsoleApp : 3 Add person (student)
 ConsoleApp -> SchoolFacade : register(access, STUDENT, id, name)
 SchoolFacade -> Access : require(MANAGE_PEOPLE)
 SchoolFacade -> PersonRegistry : register(STUDENT, id, name)
-PersonRegistry -> StudentCreator : register(id, name)
-StudentCreator -> StudentCreator : create(id, name)
-StudentCreator --> PersonRegistry : Student
+PersonRegistry -> StudentCreator : create(id, name)
+StudentCreator --> PersonRegistry : new Student
 PersonRegistry --> SchoolFacade : Student
 SchoolFacade -> EventBus : publish(PERSON_REGISTERED)
 ConsoleApp --> User : Person registered.
@@ -26,9 +27,12 @@ ConsoleApp --> User : Person registered.
 User -> ConsoleApp : 6 Enroll student
 ConsoleApp -> SchoolFacade : enroll(access, studentId, courseCode)
 SchoolFacade -> Access : require(ENROLL)
-SchoolFacade -> EnrollmentService : course(courseCode)
+SchoolFacade -> CourseCatalog : find(courseCode)
 SchoolFacade -> PersonRegistry : student(studentId)
-SchoolFacade -> SchoolFacade : check prerequisites
+loop for each prerequisite
+  SchoolFacade -> GradingService : passed(enrollment, course)
+  note right: completed and score >= 60
+end
 SchoolFacade -> EnrollmentService : enroll(studentId, course)
 SchoolFacade -> EventBus : publish(STUDENT_ENROLLED)
 ConsoleApp --> User : Enrollment completed.

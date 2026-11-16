@@ -1,6 +1,5 @@
 @startuml DecoratorStrictUML
 
-' === Strict Academic UML 2.5 Styling ===
 skinparam linetype ortho
 skinparam monochrome true
 skinparam shadowing false
@@ -22,7 +21,7 @@ skinparam arrow {
   Thickness 1
 }
 
-title Decorator — Access Control
+title Decorator - Access Control
 
 interface Access {
   + allows(p : Permission) : boolean
@@ -82,7 +81,6 @@ class AccessDeniedException <<exception>> {
   + AccessDeniedException(permission : Permission)
 }
 
-' === Strict UML 2.5 Relationships ===
 Access <|.. ReadOnlyAccess
 Access <|.. AccessDecorator
 AccessDecorator o--> "1" Access : #wrapped

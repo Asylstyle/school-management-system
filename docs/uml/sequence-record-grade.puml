@@ -6,7 +6,8 @@ autonumber
 actor User
 participant ConsoleApp
 participant SchoolFacade
-participant "access: Access" as Access
+participant "access: AuditedAccess" as Access
+participant CourseCatalog
 participant EnrollmentService
 participant GradingService
 participant EventBus
@@ -18,6 +19,9 @@ User -> ConsoleApp : 8 Record grade
 ConsoleApp -> SchoolFacade : recordGrade(access, studentId, courseCode, assessment)
 SchoolFacade -> Access : require(RECORD_GRADES)
 alt permission missing
+  Access -> SchoolFacade : reportDeniedAccess(message)
+  SchoolFacade -> EventBus : publish(ACCESS_DENIED)
+  EventBus -> ActivityLog : onEvent(event)
   Access --> SchoolFacade : AccessDeniedException
   SchoolFacade --> ConsoleApp : exception
   ConsoleApp --> User : Cannot complete: Permission required
@@ -25,6 +29,8 @@ else permission granted
   SchoolFacade -> EnrollmentService : find(studentId, courseCode)
   EnrollmentService --> SchoolFacade : enrollment
   SchoolFacade -> GradingService : record(enrollment, assessment)
+  note right: rejected if the course is completed
+  SchoolFacade -> CourseCatalog : find(courseCode)
   SchoolFacade -> EventBus : publish(GRADE_RECORDED)
   EventBus -> ActivityLog : onEvent(event)
   EventBus -> StudentNotifier : onEvent(event)

@@ -41,7 +41,9 @@ enum EventType {
   COURSE_CREATED
   STUDENT_ENROLLED
   GRADE_RECORDED
+  COURSE_COMPLETED
   REPORT_READY
+  ACCESS_DENIED
 }
 class SchoolFacade {
   -emit(type, message, studentId, teacherId)
@@ -56,4 +58,15 @@ TeacherNotifier --> Inbox
 EventBus ..> SchoolEvent
 SchoolEvent --> EventType
 SchoolFacade --> EventBus : publishes
+note bottom of SchoolEvent
+  studentId and teacherId are null
+  when the event concerns no such person
+end note
+note right of StudentNotifier
+  GRADE_RECORDED, COURSE_COMPLETED,
+  REPORT_READY
+end note
+note right of TeacherNotifier
+  STUDENT_ENROLLED
+end note
 @enduml

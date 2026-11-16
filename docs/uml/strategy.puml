@@ -36,6 +36,8 @@ class Course {
 }
 class GradingService {
   +result(enrollment, course): Optional<GradeResult>
+  +complete(enrollment, course): GradeResult
+  +passed(enrollment, course): boolean
 }
 
 GradingStrategy <|.. WeightedGrading

@@ -1,6 +1,5 @@
 @startuml SchoolDeskOverview
 
-' === Graphviz Engine + Orthogonal Straight Lines ===
 skinparam linetype ortho
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
@@ -55,9 +54,8 @@ skinparam arrow {
   Thickness 1.3
 }
 
-title SchoolDesk — System Architecture (Class Overview)
+title SchoolDesk - System Architecture (Class Overview)
 
-' === 1. Entry Point & Facade ===
 package "Application & Facade" #F8FAFC {
   class ConsoleApp {
     - access : Access
@@ -76,7 +74,6 @@ package "Application & Facade" #F8FAFC {
   }
 }
 
-' === 2. Access Control (Decorator) ===
 package "Access Control (Decorator)" #F0FDF4 {
   interface Access
   class ReadOnlyAccess
@@ -87,7 +84,6 @@ package "Access Control (Decorator)" #F0FDF4 {
   class AccessModes <<Factory>>
 }
 
-' === 3. People Management (Factory Method) ===
 package "People Management (Factory Method)" #EFF6FF {
   class PersonRegistry
   abstract class PersonCreator
@@ -98,7 +94,6 @@ package "People Management (Factory Method)" #EFF6FF {
   class Teacher
 }
 
-' === 4. Event System (Observer) ===
 package "Event System (Observer)" #FFF7ED {
   class EventBus
   interface SchoolListener
@@ -108,7 +103,6 @@ package "Event System (Observer)" #FFF7ED {
   class Inbox
 }
 
-' === 5. Academics & Grading (Builder & Strategy) ===
 package "Academics & Grading (Builder / Strategy)" #FDF4FF {
   class CourseCatalog
   class EnrollmentService
@@ -123,7 +117,6 @@ package "Academics & Grading (Builder / Strategy)" #FDF4FF {
   class GradingPolicies
 }
 
-' === Relationships: App & Facade ===
 ConsoleApp --> SchoolFacade
 ConsoleApp --> Access
 ConsoleApp ..> AuditedAccess
@@ -134,7 +127,6 @@ SchoolFacade *-- EnrollmentService
 SchoolFacade *-- GradingService
 SchoolFacade --> EventBus
 
-' === Relationships: Access Control ===
 Access <|.. ReadOnlyAccess
 Access <|.. AccessDecorator
 AccessDecorator o-- Access
@@ -143,7 +135,6 @@ AccessDecorator <|-- GradingAccess
 AccessDecorator <|-- AuditedAccess
 AccessModes ..> Access
 
-' === Relationships: People ===
 PersonRegistry o-- PersonCreator
 PersonRegistry o-- Person
 PersonCreator <|-- StudentCreator
@@ -152,7 +143,6 @@ Person <|-- Student
 Person <|-- Teacher
 PersonCreator ..> Person
 
-' === Relationships: Events ===
 EventBus o-- SchoolListener
 SchoolListener <|.. ActivityLog
 SchoolListener <|.. StudentNotifier
@@ -160,7 +150,6 @@ SchoolListener <|.. TeacherNotifier
 StudentNotifier --> Inbox
 TeacherNotifier --> Inbox
 
-' === Relationships: Academics & Grading ===
 CourseCatalog o-- Course
 EnrollmentService o-- Enrollment
 Enrollment *-- Assessment

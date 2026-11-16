@@ -101,15 +101,15 @@
 <p>The team consists of three students of group SE-2526. Each student is responsible for two design patterns and the classes around them. The table below shows the distribution.</p>
 <table>
   <tr><th style="width:24%">Student</th><th style="width:21%">Patterns</th><th>Classes and other work</th></tr>
-  <tr><td>Kuandykov Adilzhan</td><td>Factory Method, Decorator</td><td>Package <code>school.people</code>: <code>Person</code>, <code>Student</code>, <code>Teacher</code>, <code>Role</code>, <code>PersonCreator</code>, <code>StudentCreator</code>, <code>TeacherCreator</code>, <code>PersonRegistry</code>. Package <code>school.access</code>: <code>Permission</code>, <code>Access</code>, <code>ReadOnlyAccess</code>, <code>AccessDecorator</code>, <code>RegistrarAccess</code>, <code>GradingAccess</code>, <code>AccessModes</code>, <code>AccessDeniedException</code>. <code>Validation</code>; tests for profiles and access.</td></tr>
+  <tr><td>Kuandykov Adilzhan</td><td>Factory Method, Decorator</td><td>Package <code>school.people</code>: <code>Person</code>, <code>Student</code>, <code>Teacher</code>, <code>Role</code>, <code>PersonCreator</code>, <code>StudentCreator</code>, <code>TeacherCreator</code>, <code>PersonRegistry</code>. Package <code>school.access</code>: <code>Permission</code>, <code>Access</code>, <code>ReadOnlyAccess</code>, <code>AccessDecorator</code>, <code>RegistrarAccess</code>, <code>GradingAccess</code>, <code>AuditedAccess</code>, <code>AccessModes</code>, <code>AccessDeniedException</code>. <code>Validation</code>; tests for profiles and access.</td></tr>
   <tr><td>Yussupov Nurlan</td><td>Builder, Strategy</td><td><code>Course</code> with <code>Course.Builder</code>, <code>Enrollment</code>, <code>GradingService</code>. Package <code>school.grading</code>: <code>Assessment</code>, <code>GradingStrategy</code>, <code>WeightedGrading</code>, <code>PassFailGrading</code>, <code>GradingPolicies</code>, <code>GradeMath</code>, <code>GradeResult</code>; tests for grading, courses and enrollments; UML diagrams.</td></tr>
-  <tr><td>Amangeldi Assylzhan</td><td>Observer, Facade</td><td>Package <code>school.events</code>: <code>EventBus</code>, <code>SchoolListener</code>, <code>SchoolEvent</code>, <code>EventType</code>, <code>ActivityLog</code>, <code>Inbox</code>, <code>StudentNotifier</code>, <code>TeacherNotifier</code>. <code>SchoolFacade</code>, <code>EnrollmentService</code>, <code>StudentReport</code>, <code>ConsoleApp</code>, <code>ConsoleInput</code>, <code>CsvExport</code>, <code>DemoData</code>; integration tests, build scripts.</td></tr>
+  <tr><td>Amangeldi Assylzhan</td><td>Observer, Facade</td><td>Package <code>school.events</code>: <code>EventBus</code>, <code>SchoolListener</code>, <code>SchoolEvent</code>, <code>EventType</code>, <code>ActivityLog</code>, <code>Inbox</code>, <code>StudentNotifier</code>, <code>TeacherNotifier</code>. <code>SchoolFacade</code>, <code>CourseCatalog</code>, <code>EnrollmentService</code>, <code>StudentReport</code>, <code>ConsoleApp</code>, <code>ConsoleInput</code>, <code>CsvExport</code>, <code>DemoData</code>; integration tests, build scripts.</td></tr>
 </table>
 <p>The source code is kept in one Git repository: <code>https://github.com/Asylstyle/school-management-system</code>.</p>
 
 <h1>3. Project description</h1>
 <h2>3.1 Functions of the application</h2>
-<p>After start the program loads sample data (two teachers, three students, four courses) and shows the main menu. The menu has the following commands:</p>
+<p>After start the program loads sample data (two teachers, three students, four courses, two of the courses are already completed by students) and shows the main menu. The menu has the following commands:</p>
 <table>
   <tr><th style="width:8%">No.</th><th style="width:24%">Command</th><th>What it does</th></tr>
   <tr><td>1</td><td>Overview</td><td>Shows the number of students, teachers, courses and enrollments.</td></tr>
@@ -118,13 +118,14 @@
   <tr><td>4</td><td>Courses</td><td>Lists courses with the teacher, used seats, grading policy, semester, credits and prerequisites.</td></tr>
   <tr><td>5</td><td>Add course</td><td>Creates a course. Only the code, the title and the teacher are required, other values have defaults.</td></tr>
   <tr><td>6</td><td>Enroll student</td><td>Enrolls a student in a course if the prerequisites are passed and there is a free seat.</td></tr>
-  <tr><td>7</td><td>Gradebook</td><td>Shows all assessments and the final result for each enrollment.</td></tr>
+  <tr><td>7</td><td>Gradebook</td><td>Shows all assessments and the final result for each enrollment. A completed course is marked.</td></tr>
   <tr><td>8</td><td>Record grade</td><td>Adds an assessment (title, score, weight) for a student in a course. The student gets a notification.</td></tr>
-  <tr><td>9</td><td>Activity</td><td>Shows the log of all successful operations with time.</td></tr>
+  <tr><td>9</td><td>Activity</td><td>Shows the log of all successful operations and refused actions with time.</td></tr>
   <tr><td>10</td><td>Access mode</td><td>Switches between viewer, registrar, grading and admin permissions.</td></tr>
   <tr><td>11</td><td>Export CSV</td><td>Saves the gradebook to a CSV file.</td></tr>
-  <tr><td>12</td><td>Student report</td><td>Issues the report of one student: courses, results and earned credits. The student gets a notification.</td></tr>
+  <tr><td>12</td><td>Issue report</td><td>Issues the report of one student: courses, results, status of each course and earned credits. Needs the grading permission. The student gets a notification.</td></tr>
   <tr><td>13</td><td>Notifications</td><td>Shows the notifications of one student or teacher.</td></tr>
+  <tr><td>14</td><td>Complete course</td><td>Closes a course for a student. After that the result is final and no more grades can be added. The student gets a notification.</td></tr>
   <tr><td>0</td><td>Exit</td><td>Closes the program.</td></tr>
 </table>
 
@@ -134,20 +135,21 @@
   <li>IDs and names cannot be empty. Spaces at the beginning and at the end are removed. Text commands (role, grading policy, access mode) can be typed in any letter case.</li>
   <li>A course must have a registered teacher. If other values are not given, the capacity is 25, the grading policy is "Weighted letters", the semester is "Fall" and the number of credits is 5.</li>
   <li>A course can have prerequisites. They must be existing courses. A student can be enrolled only after passing every prerequisite course.</li>
+  <li>A course is passed only when it is completed (menu command 14) and the score is 60 or more. A course in progress does not count for prerequisites and credits. A course without grades cannot be completed, and a completed course does not accept new grades.</li>
   <li>Only a registered student can be enrolled. The same student cannot be enrolled in the same course twice. When all seats are taken, the course is full.</li>
   <li>A score is a number from 0 to 100. A weight is a positive number. Weights are relative, so they do not have to give 100 in total.</li>
   <li>The title of an assessment must be unique for one student in one course (letter case is ignored).</li>
   <li>The final score is the weighted average: sum(score × weight) / sum(weight). For example, Project 94 with weight 60 and Quiz 82 with weight 40 give (94×60 + 82×40) / 100 = 89.2.</li>
   <li>The final score is rounded to one decimal place, and only then the label is chosen. So the score that the user sees always agrees with the label: 89.96 is shown as 90.0 and gets the letter A.</li>
-  <li>With the "Weighted letters" policy the score is converted to a letter: A from 90, B from 80, C from 70, D from 60, otherwise F. With the "Pass / Fail" policy the result is PASS from 60 and FAIL below. A course is passed when the score is 60 or more.</li>
+  <li>With the "Weighted letters" policy the score is converted to a letter: A from 90, B from 80, C from 70, D from 60, otherwise F. With the "Pass / Fail" policy the result is PASS from 60 and FAIL below.</li>
   <li>If a student has no assessments in a course, the gradebook shows "Not graded".</li>
-  <li>Every operation needs a permission: reading needs <code>VIEW</code>, changing operations need their own permissions. Without the permission the operation is rejected.</li>
+  <li>Every operation needs a permission: reading needs <code>VIEW</code>, changing operations need their own permissions. Without the permission the operation is rejected, and the refused action is written to the activity log.</li>
 </ul>
 
 <h2>3.3 Project structure and how to run</h2>
 <pre>src/main/java/school/           ConsoleApp, ConsoleInput, DemoData
-src/main/java/school/core/      SchoolFacade, EnrollmentService, GradingService, Course, Enrollment,
-                                StudentReport, CsvExport
+src/main/java/school/core/      SchoolFacade, CourseCatalog, EnrollmentService, GradingService,
+                                Course, Enrollment, StudentReport, CsvExport
 src/main/java/school/people/    Person, Student, Teacher, Role, creators, PersonRegistry
 src/main/java/school/access/    Access, decorators, AccessModes, Permission, AccessDeniedException
 src/main/java/school/grading/   GradingStrategy, two policies, GradingPolicies, Assessment, GradeResult
@@ -175,31 +177,25 @@ build.ps1, build.sh             build scripts for Windows and for Linux and macO
 
 <h2>5.1 Factory Method (Kuandykov Adilzhan)</h2>
 <h3>Problem</h3>
-<p>The system works with two kinds of people: students and teachers. More kinds can appear later, for example administrators or parents. If the program creates objects with <code>new Student(...)</code> and <code>new Teacher(...)</code> in the place where a person is registered, the common steps of registration (checking the ID and the name) have to be repeated for every kind, and every new kind changes this code.</p>
+<p>The system works with two kinds of people: students and teachers. More kinds can appear later, for example administrators or parents. If the program creates objects with <code>new Student(...)</code> and <code>new Teacher(...)</code> in the place where a person is registered, the registration code has to know every concrete class, and every new kind changes this code.</p>
 <h3>Solution</h3>
-<p>The abstract class <code>PersonCreator</code> has the method <code>register</code>. It checks the input and then calls the abstract method <code>create</code>. This method is the factory method. The subclasses <code>StudentCreator</code> and <code>TeacherCreator</code> override it and return the concrete object. The code that calls <code>register</code> works only with the type <code>Person</code> and does not know which class was created.</p>
+<p>The abstract class <code>PersonCreator</code> declares the factory method <code>create</code>. The subclasses <code>StudentCreator</code> and <code>TeacherCreator</code> override it and return the concrete object. The code that calls <code>create</code> works only with the type <code>Person</code> and does not know which class was created. The constructors of <code>Student</code> and <code>Teacher</code> are package-private, so outside the package a person can be made only through a creator. The ID and the name are checked once, in the constructor of <code>Person</code>.</p>
 <p>The creators are kept in <code>PersonRegistry</code> in a map from the role to the creator. The map is filled once in the constructor. To register a person the registry takes the creator of the given role from the map, so there is no <code>switch</code> or <code>if</code> by the role.</p>
 <figure><img src="images/factory-method.png" alt="Factory Method" style="max-width:82%">
 <div class="legend"><b>Legend:</b><span class="it"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#ADD1B2" stroke="#000" stroke-width="0.8"/><text x="7" y="10" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="bold">C</text></svg>class</span><span class="it"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#A9DCDF" stroke="#000" stroke-width="0.8"/><text x="7" y="10" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="bold">A</text></svg>abstract class</span><span class="it"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#EB937F" stroke="#000" stroke-width="0.8"/><text x="7" y="10" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="bold">E</text></svg>enumeration</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="29" y2="6" stroke="#000" stroke-width="1"/><polygon points="29,1.5 38.5,6 29,10.5" fill="#fff" stroke="#000" stroke-width="1"/></svg>inheritance (extends)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>association (has a reference)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1" stroke-dasharray="4 2.5"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>dependency (uses or creates)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><polygon points="2,6 9,2 16,6 9,10" fill="#fff" stroke="#000" stroke-width="1"/><line x1="16" y1="6" x2="38" y2="6" stroke="#000" stroke-width="1"/></svg>aggregation (holds objects)</span><span class="it"><span class="t">+</span> public</span><span class="it"><span class="t">&minus;</span> private</span><span class="it"><span class="t">#</span> protected</span><span class="it"><i>italic</i> &ndash; abstract</span></div>
 <figcaption>Figure 3. Factory Method: creators, products and the registry</figcaption></figure>
 <h3>Code</h3>
 <div class="listing"><pre>public abstract class PersonCreator {
-    public final Person register(String id, String name) {
-        String checkedId = Validation.id(id, "ID");
-        String checkedName = Validation.text(name, "Name");
-        return create(checkedId, checkedName);
-    }
-
-    protected abstract Person create(String id, String name);
+    public abstract Person create(String id, String name);
 }</pre><div class="cap">Listing 1. PersonCreator.java, the creator with the factory method</div></div>
 <div class="listing"><pre>public final class StudentCreator extends PersonCreator {
     @Override
-    protected Person create(String id, String name) {
+    public Person create(String id, String name) {
         return new Student(id, name);
     }
 }</pre><pre>public final class TeacherCreator extends PersonCreator {
     @Override
-    protected Person create(String id, String name) {
+    public Person create(String id, String name) {
         return new Teacher(id, name);
     }
 }</pre><div class="cap">Listing 2. StudentCreator.java and TeacherCreator.java, concrete creators</div></div>
@@ -227,7 +223,7 @@ build.ps1, build.sh             build scripts for Windows and for Linux and macO
         return name + " (" + id + ")";
     }
 }</pre><pre>public final class Student extends Person {
-    public Student(String id, String name) {
+    Student(String id, String name) {
         super(id, name);
     }
 
@@ -248,7 +244,7 @@ build.ps1, build.sh             build scripts for Windows and for Linux and macO
 
     public Person register(Role role, String id, String name) {
         PersonCreator creator = creators.get(Objects.requireNonNull(role));
-        Person person = creator.register(id, name);
+        Person person = creator.create(id, name);
         if (people.containsKey(person.id())) {
             throw new IllegalArgumentException("This person ID already exists");
         }
@@ -257,7 +253,7 @@ build.ps1, build.sh             build scripts for Windows and for Linux and macO
     }
     ...
 }</pre><div class="cap">Listing 4. PersonRegistry.java, the map of creators and the registration</div></div>
-<p>The facade calls <code>people.register(role, id, name)</code> and works with the result as with a <code>Person</code>. To add a new kind of person we need a new subclass of <code>Person</code>, a new creator and one line in the constructor of the registry. The facade and the checks in <code>register</code> do not change. Figure 14 shows the registration of a teacher in the program.</p>
+<p>The facade calls <code>people.register(role, id, name)</code> and works with the result as with a <code>Person</code>. To add a new kind of person we need a new subclass of <code>Person</code>, a new creator and one line in the constructor of the registry. The facade and the checks in <code>Person</code> do not change. Figure 14 shows the registration of a teacher in the program.</p>
 
 <h2>5.2 Decorator (Kuandykov Adilzhan)</h2>
 <h3>Problem</h3>
@@ -417,7 +413,7 @@ private Access audited(Access mode) {
 <h3>Problem</h3>
 <p>A course has eight values: code, title, teacher, capacity, grading policy, semester, credits and prerequisites. Only the code, the title and the teacher are required. The other five have default values, and a course can have any number of prerequisites. A constructor with eight parameters is hard to read, it is easy to mix up the order of the string parameters, and for every set of optional values we would need one more constructor. Also the course should not change after it is created, so setters are not suitable.</p>
 <h3>Solution</h3>
-<p><code>Course</code> has a private constructor and a nested class <code>Course.Builder</code>. The required values (code and title) are given to the method <code>Course.builder</code>. The other values are set with the methods <code>teacher</code>, <code>capacity</code>, <code>grading</code>, <code>semester</code>, <code>credits</code> and <code>prerequisite</code>. Each of them returns the builder, so the calls can be written in a chain and only the needed values are named. The method <code>build</code> creates the course. All checks are in the constructor of <code>Course</code>, so a course with wrong data cannot be created. All fields of <code>Course</code> are <code>final</code>.</p>
+<p><code>Course</code> has a private constructor and a nested class <code>Course.Builder</code>. The required values (code, title and teacher) are given to the method <code>Course.builder</code>, so a course without a teacher cannot even be started. The other values are set with the methods <code>capacity</code>, <code>grading</code>, <code>semester</code>, <code>credits</code> and <code>prerequisite</code>. Each of them returns the builder, so the calls can be written in a chain and only the needed values are named. The method <code>build</code> creates the course. All checks are in the constructor of <code>Course</code>, so a course with wrong data cannot be created. All fields of <code>Course</code> are <code>final</code>.</p>
 <figure><img src="images/builder.png" alt="Builder" style="max-height:150mm">
 <div class="legend"><b>Legend:</b><span class="it"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#ADD1B2" stroke="#000" stroke-width="0.8"/><text x="7" y="10" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="bold">C</text></svg>class</span><span class="it"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#B4A7E5" stroke="#000" stroke-width="0.8"/><text x="7" y="10" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="bold">I</text></svg>interface</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>association (has a reference)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1" stroke-dasharray="4 2.5"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>dependency (uses or creates)</span><span class="it"><span class="t">+</span> public</span><span class="it"><span class="t">&minus;</span> private</span><span class="it"><u>underlined</u> &ndash; static</span><span class="it"><i>italic</i> &ndash; abstract</span></div>
 <figcaption>Figure 5. Builder: construction of a course</figcaption></figure>
@@ -443,8 +439,8 @@ private Access audited(Access mode) {
         prerequisites = List.copyOf(builder.prerequisites);
     }
 
-    public static Builder builder(String code, String title) {
-        return new Builder(code, title);
+    public static Builder builder(String code, String title, String teacherId) {
+        return new Builder(code, title, teacherId);
     }
 
     ...
@@ -452,21 +448,17 @@ private Access audited(Access mode) {
     public static final class Builder {
         private final String code;
         private final String title;
-        private String teacherId;
+        private final String teacherId;
         private int capacity = 25;
         private GradingStrategy grading = new WeightedGrading();
         private String semester = "Fall";
         private int credits = 5;
         private final List&lt;String&gt; prerequisites = new ArrayList&lt;&gt;();
 
-        private Builder(String code, String title) {
+        private Builder(String code, String title, String teacherId) {
             this.code = code;
             this.title = title;
-        }
-
-        public Builder teacher(String id) {
-            teacherId = id;
-            return this;
+            this.teacherId = teacherId;
         }
 
         public Builder capacity(int value) {
@@ -501,22 +493,18 @@ private Access audited(Access mode) {
 }</pre><div class="cap">Listing 11. Course.java with the nested Builder (the reading methods are not shown)</div></div>
 <h3>Where it is used</h3>
 <p>The sample data creates courses with the builder. The first two courses use the defaults, the third one sets the credits and another grading policy, the fourth one sets the semester, the credits and a prerequisite:</p>
-<div class="listing"><pre>school.addCourse(admin, Course.builder("CS101", "Computer Science")
-        .teacher("T001")
+<div class="listing"><pre>school.addCourse(admin, Course.builder("CS101", "Computer Science", "T001")
         .capacity(20)
         .build());
-school.addCourse(admin, Course.builder("MAT101", "Applied Mathematics")
-        .teacher("T002")
+school.addCourse(admin, Course.builder("MAT101", "Applied Mathematics", "T002")
         .capacity(24)
         .build());
-school.addCourse(admin, Course.builder("ART101", "Creative Workshop")
-        .teacher("T001")
+school.addCourse(admin, Course.builder("ART101", "Creative Workshop", "T001")
         .capacity(12)
         .credits(3)
         .grading(new PassFailGrading())
         .build());
-school.addCourse(admin, Course.builder("CS201", "Algorithms")
-        .teacher("T002")
+school.addCourse(admin, Course.builder("CS201", "Algorithms", "T002")
         .capacity(15)
         .semester("Spring")
         .credits(6)
@@ -527,7 +515,8 @@ school.addCourse(admin, Course.builder("CS201", "Algorithms")
     access.require(Permission.MANAGE_COURSES);
     String code = input.text("Code");
     String title = input.text("Title");
-    Course.Builder builder = Course.builder(code, title).teacher(input.text("Teacher ID"));
+    String teacher = input.text("Teacher ID");
+    Course.Builder builder = Course.builder(code, title, teacher);
 
     String capacity = input.text("Capacity (empty = default)");
     if (!capacity.isEmpty()) {
@@ -667,26 +656,26 @@ school.addCourse(admin, Course.builder("CS201", "Algorithms")
     }
 }</pre><div class="cap">Listing 18. GradingPolicies.java, the registry of strategies</div></div>
 <h3>Where it is used</h3>
-<p><code>GradingService</code> takes the strategy from the course and asks it to calculate the result. The same result is used to decide if a prerequisite course is passed:</p>
+<p><code>GradingService</code> takes the strategy from the course and asks it to calculate the result. The same result is used to decide if a prerequisite course is passed, but only for a completed course:</p>
 <div class="listing"><pre>public Optional&lt;GradeResult&gt; result(Enrollment enrollment, Course course) {
     return course.grading().calculate(enrollment.assessments());
 }
 
+/** A course counts as passed only after it is completed with a passing score. */
 public boolean passed(Enrollment enrollment, Course course) {
-    Optional&lt;GradeResult&gt; result = result(enrollment, course);
-    return result.isPresent() &amp;&amp; result.get().passed();
+    return enrollment.completed() &amp;&amp; result(enrollment, course).map(GradeResult::passed).orElse(false);
 }</pre><div class="cap">Listing 19. GradingService.result and GradingService.passed</div></div>
 <p>In Figure 17 the same gradebook shows "89.2 / B" for a course with letters and "91.0 / PASS" for a pass/fail course. The score 89.96 is shown as "90.0 / A".</p>
 
 <h2>5.5 Observer (Amangeldi Assylzhan)</h2>
 <h3>Problem</h3>
-<p>After each operation (registration, new course, enrollment, new grade, issued report) other parts of the system need to know about it. In our program there are three such parts: the activity log, the notifications for students and the notifications for teachers. The facade should not call each of these parts directly, because then every new receiver changes the facade.</p>
+<p>After each operation (registration, new course, enrollment, new grade, completed course, issued report) other parts of the system need to know about it. In our program there are three such parts: the activity log, the notifications for students and the notifications for teachers. The facade should not call each of these parts directly, because then every new receiver changes the facade.</p>
 <h3>Solution</h3>
-<p><code>EventBus</code> is the subject. It keeps a list of listeners and has the methods <code>subscribe</code>, <code>unsubscribe</code> and <code>publish</code>. <code>SchoolListener</code> is the observer interface with one method <code>onEvent</code>. The facade creates a <code>SchoolEvent</code> after each successful operation and gives it to the bus. The event has the type, the message, the time and the IDs of the student and the teacher that the event is about. The bus sends the event to all listeners. If the operation was rejected, no event is published.</p>
+<p><code>EventBus</code> is the subject. It keeps a list of listeners and has the methods <code>subscribe</code>, <code>unsubscribe</code> and <code>publish</code>. <code>SchoolListener</code> is the observer interface with one method <code>onEvent</code>. The facade creates a <code>SchoolEvent</code> after each successful operation and gives it to the bus. The event has the type, the message, the time and the IDs of the student and the teacher that the event is about. The bus sends the event to all listeners. If the operation was rejected, no event about it is published. Only a refused permission check is reported, as the event <code>ACCESS_DENIED</code> (see <code>AuditedAccess</code> in section 5.2).</p>
 <p>There are three concrete observers, and each of them reacts in its own way:</p>
 <ul>
   <li><code>ActivityLog</code> saves every event.</li>
-  <li><code>StudentNotifier</code> reacts to a new grade and to an issued report. It puts a message into the inbox of the student.</li>
+  <li><code>StudentNotifier</code> reacts to a new grade, a completed course and an issued report. It puts a message into the inbox of the student.</li>
   <li><code>TeacherNotifier</code> reacts to an enrollment. It puts a message into the inbox of the teacher of the course.</li>
 </ul>
 <p>The class <code>Inbox</code> keeps the list of messages for every person ID. Both notifiers write to the same inbox, and the menu command "Notifications" reads from it.</p>
@@ -701,8 +690,6 @@ public interface SchoolListener {
     public SchoolEvent {
         Objects.requireNonNull(type);
         Objects.requireNonNull(at);
-        Objects.requireNonNull(studentId);
-        Objects.requireNonNull(teacherId);
         message = Validation.text(message, "Event message");
     }
 }</pre><div class="cap">Listing 20. SchoolListener.java and SchoolEvent.java, the observer interface and the event</div></div>
@@ -735,12 +722,20 @@ public interface SchoolListener {
             try {
                 listener.onEvent(event);
             } catch (RuntimeException failure) {
-                onFailure.accept(failure);
+                reportFailure(failure);
             }
         }
     }
+
+    private void reportFailure(RuntimeException failure) {
+        try {
+            onFailure.accept(failure);
+        } catch (RuntimeException ignored) {
+            // A broken error handler must not stop delivery to the other listeners.
+        }
+    }
 }</pre><div class="cap">Listing 21. EventBus.java, the subject</div></div>
-<p>Two details of <code>EventBus</code>: the same listener is not added twice, and if one listener throws an exception, the other listeners still receive the event.</p>
+<p>Two details of <code>EventBus</code>: the same listener is not added twice, and if one listener throws an exception, the other listeners still receive the event. Even an error inside the failure handler does not stop the delivery.</p>
 <div class="listing"><pre>public final class ActivityLog implements SchoolListener {
     private final List&lt;SchoolEvent&gt; events = new ArrayList&lt;&gt;();
 
@@ -762,11 +757,15 @@ public interface SchoolListener {
 
     @Override
     public void onEvent(SchoolEvent event) {
-        if (event.type() == EventType.GRADE_RECORDED) {
-            inbox.deliver(event.studentId(), "New grade: " + event.message());
+        if (event.studentId() == null) {
+            return;
         }
-        if (event.type() == EventType.REPORT_READY) {
-            inbox.deliver(event.studentId(), event.message());
+        switch (event.type()) {
+            case GRADE_RECORDED -&gt; inbox.deliver(event.studentId(), "New grade: " + event.message());
+            case COURSE_COMPLETED, REPORT_READY -&gt; inbox.deliver(event.studentId(), event.message());
+            default -&gt; {
+                // Other events are not addressed to the student.
+            }
         }
     }
 }</pre><div class="cap">Listing 23. StudentNotifier.java, the second concrete observer</div></div>
@@ -779,7 +778,7 @@ public interface SchoolListener {
 
     @Override
     public void onEvent(SchoolEvent event) {
-        if (event.type() == EventType.STUDENT_ENROLLED) {
+        if (event.type() == EventType.STUDENT_ENROLLED &amp;&amp; event.teacherId() != null) {
             inbox.deliver(event.teacherId(), "New student: " + event.message());
         }
     }
@@ -814,25 +813,27 @@ public interface SchoolListener {
 <div class="listing"><pre>private void emit(EventType type, String message, String studentId, String teacherId) {
     events.publish(new SchoolEvent(type, message, clock.instant(), studentId, teacherId));
 }</pre><div class="cap">Listing 27. SchoolFacade.emit</div></div>
-<p>The menu command "Activity" prints the events saved by the log (Figure 20). The command "Notifications" shows the inbox of a person: a student sees the new grades and the issued report (Figure 21), a teacher sees the new students of the courses (Figure 22). Because <code>SchoolListener</code> has only one method, a new listener can also be written as a lambda.</p>
+<p>The menu command "Activity" prints the events saved by the log (Figure 20). The command "Notifications" shows the inbox of a person: a student sees the new grades, the completed courses and the issued report (Figure 21), a teacher sees the new students of the courses (Figure 22). Because <code>SchoolListener</code> has only one method, a new listener can also be written as a lambda.</p>
 
 <h2>5.6 Facade (Amangeldi Assylzhan)</h2>
 <h3>Problem</h3>
 <p>One user action touches many classes. For example, to enroll a student the program must check the permission, find the course and the student, check the prerequisites with the grading rules, check the free seats, save the enrollment and publish an event. If the console does all these steps itself, the menu code becomes long, and the same steps must be repeated in tests and in the CSV export.</p>
 <h3>Solution</h3>
-<p><code>SchoolFacade</code> gives one simple entry point to the whole subsystem. Behind it there are three services with their own data and rules:</p>
+<p><code>SchoolFacade</code> gives one simple entry point to the whole subsystem. Behind it there are four services with their own data and rules:</p>
 <ul>
   <li><code>PersonRegistry</code> keeps the people and the creators, checks that the ID is new and finds students and teachers.</li>
-  <li><code>EnrollmentService</code> keeps the courses and the enrollments, checks the second enrollment and the free seats.</li>
-  <li><code>GradingService</code> adds assessments, checks their titles and calculates results with the strategy of the course.</li>
+  <li><code>CourseCatalog</code> keeps the courses and finds a course by its code.</li>
+  <li><code>EnrollmentService</code> keeps the enrollments, checks the second enrollment and the free seats.</li>
+  <li><code>GradingService</code> adds assessments, checks their titles, completes courses and calculates results with the strategy of the course.</li>
 </ul>
-<p>The facade does not keep data itself. Every method of the facade has the same order: it checks the permission of the caller, calls the services in the right order and publishes an event to <code>EventBus</code>. The facade has five operations (<code>register</code>, <code>addCourse</code>, <code>enroll</code>, <code>recordGrade</code>, <code>issueReport</code>) and several reading methods (<code>people</code>, <code>courses</code>, <code>enrollments</code>, <code>result</code>). The console, the CSV export and the tests call only the facade and do not know about the services.</p>
+<p>The facade does not keep data itself. Every method of the facade has the same order: it checks the permission of the caller, calls the services in the right order and publishes an event to <code>EventBus</code>. The facade has six operations (<code>register</code>, <code>addCourse</code>, <code>enroll</code>, <code>recordGrade</code>, <code>completeCourse</code>, <code>issueReport</code>) and several reading methods (<code>people</code>, <code>courses</code>, <code>enrollments</code>, <code>result</code>). The console, the CSV export and the tests call only the facade and do not know about the services.</p>
 <figure><img src="images/facade.png" alt="Facade" style="max-width:100%">
 <div class="legend"><b>Legend:</b><span class="it"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#ADD1B2" stroke="#000" stroke-width="0.8"/><text x="7" y="10" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="bold">C</text></svg>class</span><span class="it"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#B4A7E5" stroke="#000" stroke-width="0.8"/><text x="7" y="10" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="bold">I</text></svg>interface</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>association (has a reference)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1" stroke-dasharray="4 2.5"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>dependency (uses or creates)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><polygon points="2,6 9,2 16,6 9,10" fill="#000" stroke="#000" stroke-width="1"/><line x1="16" y1="6" x2="38" y2="6" stroke="#000" stroke-width="1"/></svg>composition (owns the part)</span><span class="it"><span class="t">+</span> public</span><span class="it"><i>italic</i> &ndash; abstract</span></div>
 <figcaption>Figure 8. Facade and the subsystem behind it</figcaption></figure>
 <h3>Code</h3>
 <div class="listing long"><pre>public final class SchoolFacade {
     private final PersonRegistry people = new PersonRegistry();
+    private final CourseCatalog catalog = new CourseCatalog();
     private final EnrollmentService enrollments = new EnrollmentService();
     private final GradingService grades = new GradingService();
     private final EventBus events;
@@ -850,7 +851,7 @@ public interface SchoolListener {
     public Person register(Access access, Role role, String id, String name) {
         access.require(Permission.MANAGE_PEOPLE);
         Person person = people.register(role, id, name);
-        emit(EventType.PERSON_REGISTERED, person.name() + " registered as " + person.role(), "", "");
+        emit(EventType.PERSON_REGISTERED, person.name() + " registered as " + person.role(), null, null);
         return person;
     }
 
@@ -859,17 +860,17 @@ public interface SchoolListener {
         Objects.requireNonNull(course);
         people.teacher(course.teacherId());
         for (String code : course.prerequisites()) {
-            if (!enrollments.hasCourse(code)) {
+            if (!catalog.contains(code)) {
                 throw new IllegalArgumentException("Prerequisite course not found: " + code);
             }
         }
-        enrollments.addCourse(course);
-        emit(EventType.COURSE_CREATED, course.code() + " created: " + course.title(), "", course.teacherId());
+        catalog.add(course);
+        emit(EventType.COURSE_CREATED, course.code() + " created: " + course.title(), null, course.teacherId());
     }
 
     public void enroll(Access access, String studentId, String courseCode) {
         access.require(Permission.ENROLL);
-        Course course = enrollments.course(courseCode);
+        Course course = catalog.find(courseCode);
         Person student = people.student(studentId);
         for (String code : course.prerequisites()) {
             if (!hasPassed(student.id(), code)) {
@@ -884,38 +885,47 @@ public interface SchoolListener {
         access.require(Permission.RECORD_GRADES);
         Enrollment enrollment = enrollments.find(studentId, courseCode);
         grades.record(enrollment, assessment);
-        Course course = enrollments.course(enrollment.courseCode());
+        Course course = catalog.find(enrollment.courseCode());
         Person student = people.find(enrollment.studentId());
         String message = assessment.title() + ": " + assessment.score() + " for " + student.name() + " / " + course.code();
         emit(EventType.GRADE_RECORDED, message, student.id(), course.teacherId());
     }
 
+    public GradeResult completeCourse(Access access, String studentId, String courseCode) {
+        access.require(Permission.RECORD_GRADES);
+        Enrollment enrollment = enrollments.find(studentId, courseCode);
+        Course course = catalog.find(enrollment.courseCode());
+        GradeResult result = grades.complete(enrollment, course);
+        Person student = people.find(enrollment.studentId());
+        String message = student.name() + " completed " + course.code() + " with " + result.display();
+        emit(EventType.COURSE_COMPLETED, message, student.id(), course.teacherId());
+        return result;
+    }
+
     public StudentReport issueReport(Access access, String studentId) {
-        access.require(Permission.VIEW);
+        access.require(Permission.ISSUE_REPORTS);
         Person student = people.student(studentId);
         List&lt;String&gt; lines = new ArrayList&lt;&gt;();
         int credits = 0;
         for (Enrollment enrollment : enrollments.ofStudent(student.id())) {
-            Course course = enrollments.course(enrollment.courseCode());
-            Optional&lt;GradeResult&gt; result = grades.result(enrollment, course);
-            String grade = result.map(GradeResult::display).orElse("Not graded");
-            lines.add(course.code() + " " + course.title() + " | " + course.credits() + " credits | " + grade);
+            Course course = catalog.find(enrollment.courseCode());
+            lines.add(reportLine(enrollment, course));
             if (grades.passed(enrollment, course)) {
                 credits += course.credits();
             }
         }
         String message = "Report issued for " + student.name() + ", credits earned: " + credits;
-        emit(EventType.REPORT_READY, message, student.id(), "");
+        emit(EventType.REPORT_READY, message, student.id(), null);
         return new StudentReport(student.id(), student.name(), lines, credits);
     }
 
-public List&lt;Person&gt; people(Access access) {
-    access.require(Permission.VIEW);
-    return people.all();
-}
+    public List&lt;Person&gt; people(Access access) {
+        access.require(Permission.VIEW);
+        return people.all();
+    }
 
     ...
-}</pre><div class="cap">Listing 28. SchoolFacade.java: the services, the five operations and one of the reading methods</div></div>
+}</pre><div class="cap">Listing 28. SchoolFacade.java: the services, the six operations and one of the reading methods</div></div>
 <p>The reading methods check the permission <code>VIEW</code> and return copies of the lists, so the caller cannot change the data inside the services.</p>
 <h3>Where it is used</h3>
 <p>The menu command for recording a grade only reads the input and makes one call to the facade:</p>
@@ -939,10 +949,11 @@ public List&lt;Person&gt; people(Access access) {
   <tr><td>Facade and Builder</td><td><code>SchoolFacade.addCourse</code> accepts a <code>Course</code> that was made by <code>Course.Builder</code> and checks its teacher and prerequisites.</td></tr>
   <tr><td>Builder and Strategy</td><td>The builder puts a <code>GradingStrategy</code> into the course. The default is <code>WeightedGrading</code>.</td></tr>
   <tr><td>Facade and Strategy</td><td><code>GradingService</code> takes the strategy from the course and calls <code>calculate</code>. The facade uses the result for the gradebook, the report and the prerequisites.</td></tr>
+  <tr><td>Decorator and Observer</td><td>The console wraps the access mode in <code>AuditedAccess</code>. A refused check goes to <code>SchoolFacade.reportDeniedAccess</code>, and the facade publishes it as <code>ACCESS_DENIED</code> to the activity log.</td></tr>
   <tr><td>Facade and Observer</td><td>After each successful operation the facade publishes an event to <code>EventBus</code>. <code>ActivityLog</code> saves it, <code>StudentNotifier</code> and <code>TeacherNotifier</code> write to the inbox.</td></tr>
 </table>
-<p>The next three sequence diagrams show this on real scenarios. Figure 9 shows registration of a student and enrollment (Facade, Decorator, Factory Method, Observer). Figure 10 shows recording of a grade with both cases of the permission check (Facade, Decorator, Observer). Figure 11 shows how the gradebook is calculated (Facade, Strategy).</p>
-<figure class="wide"><img src="images/sequence-register-enroll.png" alt="Sequence: register and enroll">
+<p>The next three sequence diagrams show this on real scenarios. Figure 9 shows registration of a student and enrollment (Facade, Decorator, Factory Method, Observer). Figure 10 shows recording of a grade with both cases of the permission check; in the first case the refused check is written to the log (Facade, Decorator, Observer). Figure 11 shows how the gradebook is calculated (Facade, Strategy).</p>
+<div class="landscape"><figure class="wide"><img src="images/sequence-register-enroll.png" alt="Sequence: register and enroll">
 <div class="legend"><b>Legend:</b><span class="it"><svg width="14" height="16" viewBox="0 0 14 16"><circle cx="7" cy="3.2" r="2.6" fill="#E2E2F0" stroke="#000" stroke-width="0.8"/><path d="M7 5.8 V11 M2.5 7.8 H11.5 M7 11 L3 15.5 M7 11 L11 15.5" stroke="#000" stroke-width="0.8" fill="none"/></svg>actor (user)</span><span class="it"><svg width="26" height="18" viewBox="0 0 26 18"><rect x="1" y="1" width="24" height="8" rx="1.5" fill="#E2E2F0" stroke="#000" stroke-width="0.8"/><line x1="13" y1="9" x2="13" y2="18" stroke="#000" stroke-width="0.8" stroke-dasharray="2.5 2"/></svg>object and its lifeline</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>call of a method</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1" stroke-dasharray="4 2.5"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>return of the result</span><span class="it"><svg width="26" height="14" viewBox="0 0 26 14"><path d="M4 3 H22 V10 H9" stroke="#000" stroke-width="1" fill="none"/><polygon points="12,7 4,10 12,13 10,10" fill="#000"/></svg>call of an own method</span><span class="it"><span class="t"><b>1</b>, <b>2</b>, &hellip;</span> order of the messages</span></div>
 <figcaption>Figure 9. Sequence diagram: registering a student and enrolling in a course</figcaption></figure>
 <figure class="wide"><img src="images/sequence-record-grade.png" alt="Sequence: record grade">
@@ -950,7 +961,7 @@ public List&lt;Person&gt; people(Access access) {
 <figcaption>Figure 10. Sequence diagram: recording a grade</figcaption></figure>
 <figure class="wide"><img src="images/sequence-gradebook.png" alt="Sequence: gradebook">
 <div class="legend"><b>Legend:</b><span class="it"><svg width="14" height="16" viewBox="0 0 14 16"><circle cx="7" cy="3.2" r="2.6" fill="#E2E2F0" stroke="#000" stroke-width="0.8"/><path d="M7 5.8 V11 M2.5 7.8 H11.5 M7 11 L3 15.5 M7 11 L11 15.5" stroke="#000" stroke-width="0.8" fill="none"/></svg>actor (user)</span><span class="it"><svg width="26" height="18" viewBox="0 0 26 18"><rect x="1" y="1" width="24" height="8" rx="1.5" fill="#E2E2F0" stroke="#000" stroke-width="0.8"/><line x1="13" y1="9" x2="13" y2="18" stroke="#000" stroke-width="0.8" stroke-dasharray="2.5 2"/></svg>object and its lifeline</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>call of a method</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1" stroke-dasharray="4 2.5"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>return of the result</span><span class="it"><svg width="40" height="14" viewBox="0 0 40 14"><rect x="1" y="1" width="38" height="12" fill="none" stroke="#000" stroke-width="1.2"/><path d="M1 7.5 H17 L20 4.5 V1" stroke="#000" stroke-width="0.8" fill="none"/><text x="3" y="6.5" font-family="Arial, sans-serif" font-size="5.5" font-weight="bold">loop</text></svg>repeated messages</span><span class="it"><span class="t"><b>1</b>, <b>2</b>, &hellip;</span> order of the messages</span></div>
-<figcaption>Figure 11. Sequence diagram: showing the gradebook</figcaption></figure>
+<figcaption>Figure 11. Sequence diagram: showing the gradebook</figcaption></figure></div>
 
 <h1 class="pb">7. Screenshots of the application</h1>
 <p>All screenshots in this section were taken from the program running in the Windows console.</p>
@@ -972,23 +983,23 @@ public List&lt;Person&gt; people(Access access) {
 <table>
   <tr><th style="width:26%">Test group</th><th>What is checked</th></tr>
   <tr><td>ProfileTests</td><td>Creators return the right type and role; empty ID or name is rejected; the ID is stored in upper case; the registry chooses the creator by the role, rejects a second person with the same ID in another letter case and finds students and teachers.</td></tr>
-  <tr><td>AccessTests</td><td>Permissions of viewer, registrar, grading and admin; <code>require</code> throws <code>AccessDeniedException</code>; the modes of <code>AccessModes</code> and an unknown mode.</td></tr>
+  <tr><td>AccessTests</td><td>Permissions of viewer, registrar, grading and admin; <code>require</code> throws <code>AccessDeniedException</code>; <code>AuditedAccess</code> reports only refused checks; the modes of <code>AccessModes</code> and an unknown mode.</td></tr>
   <tr><td>AssessmentTests</td><td>Score below 0 or above 100, wrong weight and empty title are rejected.</td></tr>
   <tr><td>GradeTests</td><td>Weighted average 89.2; borders of the letters with rounding (59.94 and 59.96, 89.94 and 89.96); pass/fail border; empty list gives no result; the registry of policies.</td></tr>
   <tr><td>CourseTests</td><td>Defaults of the builder; every optional method; the list of prerequisites cannot be changed; a course without a teacher, with capacity 0 or with credits 0 is rejected.</td></tr>
-  <tr><td>EnrollmentTests</td><td>Second enrollment and a full course are rejected; IDs in another letter case find the same enrollment; duplicate assessment title; the lists returned to the caller cannot be changed.</td></tr>
+  <tr><td>EnrollmentTests</td><td>The course catalog; second enrollment and a full course are rejected; a course is passed only after completion, cannot be completed without grades or twice and does not accept grades after completion; IDs in another letter case find the same enrollment; duplicate assessment title; the lists returned to the caller cannot be changed.</td></tr>
   <tr><td>ObserverTests</td><td>A listener is not added twice; unsubscribe works; an error in one listener does not stop the others; every notifier reacts only to its own events and writes to the right inbox; a rejected grade gives no notification.</td></tr>
-  <tr><td>SchoolTests</td><td>The facade: duplicate IDs, missing permissions including <code>VIEW</code>, unknown prerequisite, prerequisite that is not passed, full course, second enrollment, the student report, number of published events.</td></tr>
+  <tr><td>SchoolTests</td><td>The facade: duplicate IDs, missing permissions including <code>VIEW</code>, unknown prerequisite, prerequisite that is not passed or not completed, full course, second enrollment, completing a course, the report needs <code>ISSUE_REPORTS</code>, number of published events.</td></tr>
   <tr><td>ExportTests</td><td>Content of the CSV text and of the saved file; quotes in cells.</td></tr>
-  <tr><td>ConsoleTests</td><td>Scenarios through the menu: add a student, enroll, record a grade, switch to viewer and get a refusal; a course with defaults; the report and the notifications; commands in another letter case.</td></tr>
+  <tr><td>ConsoleTests</td><td>Scenarios through the menu: add a student, enroll, record a grade, complete the course, switch to viewer and get a refusal that appears in the log; a course with defaults; the report and the notifications; commands in another letter case.</td></tr>
 </table>
 <p>Result of the command <code>./build.ps1 -Test</code>:</p>
-<pre>PASS: 211 checks across 10 test groups</pre>
+<pre>PASS: 248 checks across 10 test groups</pre>
 <p>The code is compiled with all compiler warnings switched on (<code>-Xlint:all</code>) without warnings. The repository also has a GitHub Actions workflow (<code>.github/workflows/java.yml</code>). After every push it builds the project with JDK 17 and runs the tests.</p>
 
 <h1>9. Conclusion</h1>
 <p>In this project we built a console school management system and used six design patterns in it: Factory Method, Decorator, Builder, Strategy, Observer and Facade. Each team member is responsible for two patterns. The patterns are connected in one program: the facade receives every request, checks the decorated access object, gives the work to the services, which use the creators, the courses made by the builder and the strategy of the course, and publishes events to the observers.</p>
-<p>During the work we saw the practical value of the patterns. With Factory Method a new kind of person does not change the registration code. With Decorator four access modes are made from three small classes. With Builder a course with eight values is created by naming only the needed ones. With Strategy a new grading policy is one new class. With Observer the log and the notifications of students and teachers are added without changes in the facade. With Facade the console code stays short and the tests use the same operations as the user. The main difficulty was to keep the patterns simple and not to add classes that the program does not need.</p>
+<p>During the work we saw the practical value of the patterns. With Factory Method a new kind of person does not change the registration code. With Decorator four access modes are made from three small classes, and one more decorator writes refused actions to the log without changing the others. With Builder a course with eight values is created by naming only the needed ones. With Strategy a new grading policy is one new class. With Observer the log and the notifications of students and teachers are added without changes in the facade. With Facade the console code stays short and the tests use the same operations as the user. The main difficulty was to keep the patterns simple and not to add classes that the program does not need.</p>
 
 <h1>10. Further work</h1>
 <ul>

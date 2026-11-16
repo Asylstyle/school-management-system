@@ -12,7 +12,9 @@ class SchoolFacade {
   +addCourse(access, course)
   +enroll(access, studentId, courseCode)
   +recordGrade(access, studentId, courseCode, assessment)
+  +completeCourse(access, studentId, courseCode): GradeResult
   +issueReport(access, studentId): StudentReport
+  +reportDeniedAccess(message)
   +people(access): List<Person>
   +courses(access): List<Course>
   +enrollments(access): List<Enrollment>
@@ -23,13 +25,18 @@ class PersonRegistry {
   +student(id): Person
   +teacher(id): Person
 }
+class CourseCatalog {
+  +add(course)
+  +find(code): Course
+  +all(): List<Course>
+}
 class EnrollmentService {
-  +addCourse(course)
   +enroll(studentId, course): Enrollment
   +find(studentId, courseCode): Enrollment
 }
 class GradingService {
   +record(enrollment, assessment)
+  +complete(enrollment, course): GradeResult
   +result(enrollment, course): Optional<GradeResult>
   +passed(enrollment, course): boolean
 }
@@ -43,6 +50,7 @@ interface Access {
 ConsoleApp --> SchoolFacade
 CsvExport ..> SchoolFacade
 SchoolFacade *-- PersonRegistry
+SchoolFacade *-- CourseCatalog
 SchoolFacade *-- EnrollmentService
 SchoolFacade *-- GradingService
 SchoolFacade --> EventBus

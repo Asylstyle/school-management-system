@@ -13,8 +13,8 @@ class Course {
   -semester: String
   -credits: int
   -prerequisites: List<String>
-  -Course(b: Builder)
-  +{static} builder(code, title): Builder
+  -Course(builder: Builder)
+  +{static} builder(code, title, teacherId): Builder
   +code(): String
   +title(): String
   +teacherId(): String
@@ -33,7 +33,6 @@ class "Course.Builder" as Builder {
   -semester: String = "Fall"
   -credits: int = 5
   -prerequisites: List<String>
-  +teacher(id: String): Builder
   +capacity(value: int): Builder
   +grading(value: GradingStrategy): Builder
   +semester(value: String): Builder
