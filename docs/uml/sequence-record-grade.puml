@@ -11,6 +11,7 @@ participant SchoolStore
 participant Enrollment
 participant EventBus
 participant ActivityLog
+participant StudentNotifier
 
 User -> ConsoleApp : 8 Record grade
 ConsoleApp -> SchoolFacade : recordGrade(access, studentId, courseCode, assessment)
@@ -26,6 +27,7 @@ else permission granted
   SchoolFacade -> Enrollment : add(assessment)
   SchoolFacade -> EventBus : publish(GRADE_RECORDED)
   EventBus -> ActivityLog : onEvent(event)
+  EventBus -> StudentNotifier : onEvent(event)
   SchoolFacade --> ConsoleApp
   ConsoleApp --> User : Grade recorded.
 end

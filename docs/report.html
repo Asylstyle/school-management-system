@@ -100,7 +100,7 @@
   <tr><th style="width:27%">Student</th><th style="width:23%">Patterns</th><th>Classes and other work</th></tr>
   <tr><td>Kuandykov Adilzhan</td><td>Factory Method, Decorator</td><td><code>Person</code>, <code>Student</code>, <code>Teacher</code>, <code>Role</code>, <code>PersonCreator</code>, <code>StudentCreator</code>, <code>TeacherCreator</code>, <code>Permission</code>, <code>Access</code>, <code>ReadOnlyAccess</code>, <code>AccessDecorator</code>, <code>RegistrarAccess</code>, <code>GradingAccess</code>, <code>Validation</code>; tests for profiles and access.</td></tr>
   <tr><td>Yussupov Nurlan</td><td>Builder, Strategy</td><td><code>Course</code> with <code>Course.Builder</code>, <code>Enrollment</code>, <code>Assessment</code>, <code>GradingStrategy</code>, <code>WeightedGrading</code>, <code>PassFailGrading</code>, <code>GradeMath</code>, <code>GradeResult</code>; tests for grading, courses and enrollments; UML diagrams.</td></tr>
-  <tr><td>Amangeldi Assylzhan</td><td>Observer, Facade</td><td><code>EventBus</code>, <code>SchoolListener</code>, <code>ActivityLog</code>, <code>SchoolEvent</code>, <code>EventType</code>, <code>SchoolFacade</code>, <code>SchoolStore</code>, <code>ConsoleApp</code>, <code>ConsoleInput</code>, <code>CsvExport</code>, <code>DemoData</code>; integration tests, build scripts.</td></tr>
+  <tr><td>Amangeldi Assylzhan</td><td>Observer, Facade</td><td><code>EventBus</code>, <code>SchoolListener</code>, <code>ActivityLog</code>, <code>StudentNotifier</code>, <code>SchoolEvent</code>, <code>EventType</code>, <code>SchoolFacade</code>, <code>SchoolStore</code>, <code>ConsoleApp</code>, <code>ConsoleInput</code>, <code>CsvExport</code>, <code>DemoData</code>; integration tests, build scripts.</td></tr>
 </table>
 <p>The source code is kept in one Git repository: <code>https://github.com/Asylstyle/school-management-system</code>.</p>
 
@@ -116,7 +116,7 @@
   <tr><td>5</td><td>Add course</td><td>Creates a course with a teacher, capacity and grading policy.</td></tr>
   <tr><td>6</td><td>Enroll student</td><td>Enrolls a student in a course.</td></tr>
   <tr><td>7</td><td>Gradebook</td><td>Shows all assessments and the final result for each enrollment.</td></tr>
-  <tr><td>8</td><td>Record grade</td><td>Adds an assessment (title, score, weight) for a student in a course.</td></tr>
+  <tr><td>8</td><td>Record grade</td><td>Adds an assessment (title, score, weight) for a student in a course and prints a notification for the student.</td></tr>
   <tr><td>9</td><td>Activity</td><td>Shows the log of all successful operations with time.</td></tr>
   <tr><td>10</td><td>Access mode</td><td>Switches between viewer, registrar, grading and admin permissions.</td></tr>
   <tr><td>11</td><td>Export CSV</td><td>Saves the gradebook to a CSV file.</td></tr>
@@ -138,7 +138,7 @@
 </ul>
 
 <h2>3.3 Project structure and how to run</h2>
-<pre>src/main/java/school/    application classes (33 files)
+<pre>src/main/java/school/    application classes (34 files)
 src/test/java/school/    tests (12 files)
 docs/                    report, UML sources, diagrams, screenshots
 build.ps1                build script for Windows
@@ -407,10 +407,10 @@ final class GradeMath {
 
 <h2>5.5 Observer (Amangeldi Assylzhan)</h2>
 <h3>Problem</h3>
-<p>After each operation (registration, new course, enrollment, new grade) other parts of the system may need to know about it. In our program this is the activity log. Later it can be a notification for a student or a teacher. The facade should not call each of these parts directly, because then every new receiver changes the facade.</p>
+<p>After each operation (registration, new course, enrollment, new grade) other parts of the system may need to know about it. In our program there are two such parts: the activity log and the notification for a student about a new grade. Later it can also be a notification for a teacher or a parent. The facade should not call each of these parts directly, because then every new receiver changes the facade.</p>
 <h3>Solution</h3>
-<p><code>EventBus</code> is the subject. It keeps a list of listeners and has the methods <code>subscribe</code>, <code>unsubscribe</code> and <code>publish</code>. <code>SchoolListener</code> is the observer interface with one method <code>onEvent</code>. <code>ActivityLog</code> is a concrete observer that saves every event. The facade creates a <code>SchoolEvent</code> (type, message, time) after each successful operation and gives it to the bus. The bus sends the event to all listeners. If the operation was rejected, no event is published.</p>
-<figure><img src="images/observer.png" alt="Observer" style="max-height:87mm">
+<p><code>EventBus</code> is the subject. It keeps a list of listeners and has the methods <code>subscribe</code>, <code>unsubscribe</code> and <code>publish</code>. <code>SchoolListener</code> is the observer interface with one method <code>onEvent</code>. There are two concrete observers. <code>ActivityLog</code> saves every event. <code>StudentNotifier</code> looks at the type of the event and reacts only to <code>GRADE_RECORDED</code>: it makes a notification text and sends it to its channel. The channel is given in the constructor, in the console program it is <code>System.out::println</code>. The facade creates a <code>SchoolEvent</code> (type, message, time) after each successful operation and gives it to the bus. The bus sends the event to all listeners. If the operation was rejected, no event is published.</p>
+<figure><img src="images/observer.png" alt="Observer" style="max-height:104mm">
 <div class="legend"><b>Legend:</b><span class="it"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#ADD1B2" stroke="#000" stroke-width="0.8"/><text x="7" y="10" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="bold">C</text></svg>class</span><span class="it"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#B4A7E5" stroke="#000" stroke-width="0.8"/><text x="7" y="10" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="bold">I</text></svg>interface</span><span class="it"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#EB937F" stroke="#000" stroke-width="0.8"/><text x="7" y="10" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="bold">E</text></svg>enumeration</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="29" y2="6" stroke="#000" stroke-width="1" stroke-dasharray="4 2.5"/><polygon points="29,1.5 38.5,6 29,10.5" fill="#fff" stroke="#000" stroke-width="1"/></svg>realization (implements)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>association (has a reference)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1" stroke-dasharray="4 2.5"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>dependency (uses or creates)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><polygon points="2,6 9,2 16,6 9,10" fill="#fff" stroke="#000" stroke-width="1"/><line x1="16" y1="6" x2="38" y2="6" stroke="#000" stroke-width="1"/></svg>aggregation (holds objects)</span><span class="it"><span class="t">0..*</span> any number</span><span class="it"><span class="t">+</span> public</span><span class="it"><span class="t">&minus;</span> private</span><span class="it"><i>italic</i> &ndash; abstract</span></div>
 <figcaption>Figure 6. Observer: events of the school</figcaption></figure>
 <h3>Code</h3>
@@ -461,20 +461,31 @@ public final class ActivityLog implements SchoolListener {
     private final List&lt;SchoolEvent&gt; events = new ArrayList&lt;&gt;();
     @Override public void onEvent(SchoolEvent event) { events.add(event); }
     public List&lt;SchoolEvent&gt; events() { return List.copyOf(events); }
-}</pre><div class="cap">Listing 19. ActivityLog.java, the concrete observer</div></div>
+}</pre><pre>package school;
+
+import java.util.Objects;
+import java.util.function.Consumer;
+public final class StudentNotifier implements SchoolListener {
+    private final Consumer&lt;String&gt; channel;
+    public StudentNotifier(Consumer&lt;String&gt; channel) { this.channel = Objects.requireNonNull(channel); }
+    @Override public void onEvent(SchoolEvent event) {
+        if (event.type() == EventType.GRADE_RECORDED) channel.accept(&quot;Student notification | New grade &quot; + event.message());
+    }
+}</pre><div class="cap">Listing 19. ActivityLog.java and StudentNotifier.java, the concrete observers</div></div>
 <p>Two details of <code>EventBus</code>: the same listener is not added twice, and if one listener throws an exception, the other listeners still receive the event.</p>
 <h3>Where it is used</h3>
-<p>The log is subscribed to the bus when the program starts. The facade publishes events through the private method <code>emit</code>.</p>
+<p>Both observers are subscribed to the bus when the program starts. The log is subscribed before the sample data is loaded, so it also keeps the events of the sample data. The notifier is subscribed after that, so notifications are printed only for the grades that the user records. The facade publishes events through the private method <code>emit</code> and does not know how many observers there are.</p>
 <div class="listing"><pre>public static void main(String[] args) {
     EventBus events = new EventBus();
     ActivityLog log = new ActivityLog();
     events.subscribe(log);
     SchoolFacade school = new SchoolFacade(events);
     DemoData.load(school);
+    events.subscribe(new StudentNotifier(System.out::println));
     ...
 }</pre><div class="cap">Listing 20. Subscription in ConsoleApp.main</div></div>
 <div class="listing"><pre>private void emit(EventType type, String message) { events.publish(new SchoolEvent(type, message, clock.instant())); }</pre><div class="cap">Listing 21. SchoolFacade.emit</div></div>
-<p>The menu command "Activity" prints the events saved by the log (Figure 17). Because <code>SchoolListener</code> has only one method, a new listener can also be written as a lambda.</p>
+<p>When a grade is recorded, one event goes to both observers. The notifier prints the line "Student notification | New grade ..." (Figure 15), and the log saves the event. The menu command "Activity" prints the events saved by the log (Figure 17). To send notifications in another way, for example by e-mail, only a new channel is needed. Because <code>SchoolListener</code> has only one method, a new listener can also be written as a lambda.</p>
 
 <h2>5.6 Facade (Amangeldi Assylzhan)</h2>
 <h3>Problem</h3>
@@ -553,13 +564,13 @@ public final class ActivityLog implements SchoolListener {
   <tr><td>Facade and Builder</td><td><code>SchoolFacade.addCourse</code> accepts a <code>Course</code> that was made by <code>Course.Builder</code>.</td></tr>
   <tr><td>Builder and Strategy</td><td>The builder puts a <code>GradingStrategy</code> into the course. The default is <code>WeightedGrading</code>.</td></tr>
   <tr><td>Facade and Strategy</td><td><code>SchoolFacade.result</code> takes the strategy from the course and calls <code>calculate</code>.</td></tr>
-  <tr><td>Facade and Observer</td><td>After each successful operation the facade publishes an event to <code>EventBus</code>, and <code>ActivityLog</code> receives it.</td></tr>
+  <tr><td>Facade and Observer</td><td>After each successful operation the facade publishes an event to <code>EventBus</code>. <code>ActivityLog</code> receives every event, <code>StudentNotifier</code> reacts to new grades.</td></tr>
 </table>
 <p>The next three sequence diagrams show this on real scenarios. Figure 8 shows registration of a student and enrollment (Facade, Decorator, Factory Method, Observer). Figure 9 shows recording of a grade with both cases of the permission check (Facade, Decorator, Observer). Figure 10 shows how the gradebook is calculated (Facade, Strategy).</p>
 <figure class="wide"><img src="images/sequence-register-enroll.png" alt="Sequence: register and enroll">
 <div class="legend"><b>Legend:</b><span class="it"><svg width="14" height="16" viewBox="0 0 14 16"><circle cx="7" cy="3.2" r="2.6" fill="#E2E2F0" stroke="#000" stroke-width="0.8"/><path d="M7 5.8 V11 M2.5 7.8 H11.5 M7 11 L3 15.5 M7 11 L11 15.5" stroke="#000" stroke-width="0.8" fill="none"/></svg>actor (user)</span><span class="it"><svg width="26" height="18" viewBox="0 0 26 18"><rect x="1" y="1" width="24" height="8" rx="1.5" fill="#E2E2F0" stroke="#000" stroke-width="0.8"/><line x1="13" y1="9" x2="13" y2="18" stroke="#000" stroke-width="0.8" stroke-dasharray="2.5 2"/></svg>object and its lifeline</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>call of a method</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1" stroke-dasharray="4 2.5"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>return of the result</span><span class="it"><svg width="26" height="14" viewBox="0 0 26 14"><path d="M4 3 H22 V10 H9" stroke="#000" stroke-width="1" fill="none"/><polygon points="12,7 4,10 12,13 10,10" fill="#000"/></svg>call of an own method</span><span class="it"><span class="t"><b>1</b>, <b>2</b>, &hellip;</span> order of the messages</span></div>
 <figcaption>Figure 8. Sequence diagram: registering a student and enrolling in a course</figcaption></figure>
-<figure class="wide"><img src="images/sequence-record-grade.png" alt="Sequence: record grade" style="max-width:94%">
+<figure class="wide"><img src="images/sequence-record-grade.png" alt="Sequence: record grade">
 <div class="legend"><b>Legend:</b><span class="it"><svg width="14" height="16" viewBox="0 0 14 16"><circle cx="7" cy="3.2" r="2.6" fill="#E2E2F0" stroke="#000" stroke-width="0.8"/><path d="M7 5.8 V11 M2.5 7.8 H11.5 M7 11 L3 15.5 M7 11 L11 15.5" stroke="#000" stroke-width="0.8" fill="none"/></svg>actor (user)</span><span class="it"><svg width="26" height="18" viewBox="0 0 26 18"><rect x="1" y="1" width="24" height="8" rx="1.5" fill="#E2E2F0" stroke="#000" stroke-width="0.8"/><line x1="13" y1="9" x2="13" y2="18" stroke="#000" stroke-width="0.8" stroke-dasharray="2.5 2"/></svg>object and its lifeline</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>call of a method</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1" stroke-dasharray="4 2.5"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>return of the result</span><span class="it"><svg width="40" height="14" viewBox="0 0 40 14"><rect x="1" y="1" width="38" height="12" fill="none" stroke="#000" stroke-width="1.2"/><path d="M1 7.5 H17 L20 4.5 V1" stroke="#000" stroke-width="0.8" fill="none"/><text x="3" y="6.5" font-family="Arial, sans-serif" font-size="5.5" font-weight="bold">alt</text></svg>alternative branches with conditions in [ ]</span><span class="it"><span class="t"><b>1</b>, <b>2</b>, &hellip;</span> order of the messages</span></div>
 <figcaption>Figure 9. Sequence diagram: recording a grade</figcaption></figure>
 <figure class="wide"><img src="images/sequence-gradebook.png" alt="Sequence: gradebook">
@@ -572,9 +583,9 @@ public final class ActivityLog implements SchoolListener {
 <figure class="shot"><img src="screenshots/02-people-courses.png" alt=""><figcaption>Figure 12. List of people and list of courses from the sample data</figcaption></figure>
 <figure class="shot"><img src="screenshots/03-add-teacher-course.png" alt=""><figcaption>Figure 13. Adding a teacher (Factory Method) and a new course (Builder). The new course PHY101 appears in the list</figcaption></figure>
 <figure class="shot"><img src="screenshots/04-add-student-enroll.png" alt=""><figcaption>Figure 14. Adding a student and enrolling students. The number of used seats of MAT101 changed from 1 to 3</figcaption></figure>
-<figure class="shot"><img src="screenshots/05-record-grade-gradebook.png" alt=""><figcaption>Figure 15. Recording two grades and the gradebook. Courses with letters and with pass/fail are calculated by different strategies</figcaption></figure>
+<figure class="shot"><img src="screenshots/05-record-grade-gradebook.png" alt=""><figcaption>Figure 15. Recording two grades and the gradebook. After each grade the student notification is printed (Observer). Courses with letters and with pass/fail are calculated by different strategies</figcaption></figure>
 <figure class="shot tall"><img src="screenshots/06-access-modes.png" alt=""><figcaption>Figure 16. Access modes (Decorator). A viewer cannot add a person, a registrar cannot record grades, a grading operator cannot enroll students</figcaption></figure>
-<figure class="shot"><img src="screenshots/08-activity-log.png" alt=""><figcaption>Figure 17. Activity log (Observer). The last line is the grade that was recorded just before</figcaption></figure>
+<figure class="shot"><img src="screenshots/08-activity-log.png" alt=""><figcaption>Figure 17. Activity log (Observer). The same grade event is received by the notifier (the line after the input) and by the log (the last line)</figcaption></figure>
 <figure class="shot tall"><img src="screenshots/07-validation.png" alt=""><figcaption>Figure 18. Wrong input is rejected: second enrollment, score above 100, capacity that is not a number, ID that already exists</figcaption></figure>
 <figure class="shot"><img src="screenshots/09-export-csv.png" alt=""><figcaption>Figure 19. Export of the gradebook to a CSV file and the content of the file</figcaption></figure>
 
@@ -588,13 +599,13 @@ public final class ActivityLog implements SchoolListener {
   <tr><td>GradeTests</td><td>Weighted average 89.2; borders of the letters (59.99, 60, 70, 80, 90, 100); pass/fail border; empty list gives no result.</td></tr>
   <tr><td>CourseTests</td><td>Default capacity and grading of the builder; course without a teacher or with capacity 0 is rejected.</td></tr>
   <tr><td>EnrollmentTests</td><td>The list of assessments returned to the caller cannot be changed.</td></tr>
-  <tr><td>ObserverTests</td><td>A listener is not added twice; unsubscribe works; an error in one listener does not stop the others.</td></tr>
+  <tr><td>ObserverTests</td><td>A listener is not added twice; unsubscribe works; an error in one listener does not stop the others; the notifier reacts only to new grades; a grade recorded through the facade reaches both observers, a rejected grade reaches none.</td></tr>
   <tr><td>SchoolTests</td><td>The facade: duplicate IDs, missing permissions, full course, second enrollment, duplicate assessment title, number of published events.</td></tr>
   <tr><td>ExportTests</td><td>Content of the CSV text and of the saved file; quotes in cells.</td></tr>
   <tr><td>ConsoleTests</td><td>A full scenario through the menu: add a student, enroll, record a grade, switch to viewer and get a refusal.</td></tr>
 </table>
 <p>Result of the command <code>./build.ps1 -Test</code>:</p>
-<pre>PASS: 92 checks across 10 test groups</pre>
+<pre>PASS: 101 checks across 10 test groups</pre>
 <p>The repository also has a GitHub Actions workflow (<code>.github/workflows/java.yml</code>). After every push it builds the project with JDK 17 and runs the tests.</p>
 
 <h1>9. Conclusion</h1>
@@ -606,7 +617,7 @@ public final class ActivityLog implements SchoolListener {
   <li>Save the data to a file or a database, so that it is not lost after exit.</li>
   <li>Add login with a password, so that the access mode depends on the user and cannot be changed freely.</li>
   <li>Allow a teacher to record grades only in their own courses.</li>
-  <li>Add more observers, for example a notification for the student when a new grade is recorded.</li>
+  <li>Send the notifications to the student by e-mail or to a messenger. Only a new channel for <code>StudentNotifier</code> is needed.</li>
   <li>Add editing and deleting of people, courses and grades.</li>
   <li>Add new grading policies and new kinds of people (administrator, parent).</li>
   <li>Add attendance and a timetable.</li>

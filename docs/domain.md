@@ -20,4 +20,4 @@ Both policies use a weighted average. `GradeMath` divides weights by the largest
 
 ## Events
 
-The facade publishes one event after each successful mutation. Rejected operations publish nothing. Duplicate subscriptions are ignored. Unsubscribing removes the listener. A failing listener is reported without preventing other listeners from receiving an event or undoing a completed operation.
+The facade publishes one event after each successful mutation. `ActivityLog` stores every event. `StudentNotifier` reacts only to recorded grades and sends a notification line to its channel; in the console the channel is the standard output. Rejected operations publish nothing. Duplicate subscriptions are ignored. Unsubscribing removes the listener. A failing listener is reported without preventing other listeners from receiving an event or undoing a completed operation.

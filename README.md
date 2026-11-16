@@ -45,10 +45,10 @@ Access modes demonstrate permission composition. They are not user authenticatio
 | Decorator | `Access`, `RegistrarAccess`, `GradingAccess` | Add permissions to a basic viewer | adilzhandev |
 | Builder | `Course.Builder` | Construct a validated, immutable course | Nurlan-byte |
 | Strategy | `GradingStrategy`, `WeightedGrading`, `PassFailGrading` | Choose a course's grading policy | Nurlan-byte |
-| Observer | `EventBus`, `SchoolListener`, `ActivityLog` | Deliver successful operation events to listeners | Asylstyle |
+| Observer | `EventBus`, `SchoolListener`, `ActivityLog`, `StudentNotifier` | Deliver successful operation events to listeners; notify students about new grades | Asylstyle |
 | Facade | `SchoolFacade` | Coordinate validation, storage, permissions and notifications | Asylstyle |
 
-The console calls the facade. The facade uses factories to register people and accepts courses built with the builder. Every mutation checks decorated permissions. Successful changes publish events to the activity log. Gradebook results use the strategy stored on each course.
+The console calls the facade. The facade uses factories to register people and accepts courses built with the builder. Every mutation checks decorated permissions. Successful changes publish events to the activity log, and a recorded grade also produces a student notification. Gradebook results use the strategy stored on each course.
 
 ## Grading
 

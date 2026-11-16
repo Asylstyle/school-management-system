@@ -26,6 +26,7 @@ classDiagram
   SchoolFacade --> EventBus
   EventBus o-- SchoolListener
   SchoolListener <|.. ActivityLog
+  SchoolListener <|.. StudentNotifier
   ConsoleApp --> SchoolFacade
 ```
 
@@ -42,6 +43,7 @@ sequenceDiagram
   participant Enrollment
   participant Events as EventBus
   participant Log as ActivityLog
+  participant Notifier as StudentNotifier
   participant Policy as GradingStrategy
   User->>UI: Record grade
   UI->>Facade: recordGrade(access, student, course, assessment)
@@ -50,6 +52,7 @@ sequenceDiagram
   Facade->>Enrollment: add(assessment)
   Facade->>Events: publish(GRADE_RECORDED)
   Events->>Log: onEvent(event)
+  Events->>Notifier: onEvent(event)
   UI->>Facade: result(enrollment)
   Facade->>Policy: calculate(assessments)
   Policy-->>UI: score and label through facade

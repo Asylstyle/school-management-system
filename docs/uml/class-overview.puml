@@ -21,6 +21,7 @@ class SchoolStore
 class EventBus
 interface SchoolListener
 class ActivityLog
+class StudentNotifier
 abstract class PersonCreator
 class StudentCreator
 class TeacherCreator
@@ -48,6 +49,7 @@ SchoolFacade ..> PersonCreator : uses
 SchoolFacade ..> Access : checks
 EventBus o-- "0..*" SchoolListener
 SchoolListener <|.. ActivityLog
+SchoolListener <|.. StudentNotifier
 PersonCreator <|-- StudentCreator
 PersonCreator <|-- TeacherCreator
 Person <|-- Student

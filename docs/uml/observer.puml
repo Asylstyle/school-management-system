@@ -18,6 +18,10 @@ class ActivityLog {
   +onEvent(e: SchoolEvent)
   +events(): List<SchoolEvent>
 }
+class StudentNotifier {
+  -channel: Consumer<String>
+  +onEvent(e: SchoolEvent)
+}
 class SchoolEvent {
   +type(): EventType
   +message(): String
@@ -35,6 +39,7 @@ class SchoolFacade {
 
 EventBus o-- "0..*" SchoolListener
 SchoolListener <|.. ActivityLog
+SchoolListener <|.. StudentNotifier
 EventBus ..> SchoolEvent
 SchoolEvent --> EventType
 SchoolFacade --> EventBus : publishes
