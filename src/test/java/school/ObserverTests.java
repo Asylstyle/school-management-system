@@ -24,7 +24,7 @@ final class ObserverTests {
         });
         bus.subscribe(log);
         bus.subscribe(log);
-        SchoolEvent created = new SchoolEvent(EventType.COURSE_CREATED, "Created", Instant.EPOCH, "", "T1");
+        SchoolEvent created = new SchoolEvent(EventType.COURSE_CREATED, "Created", Instant.EPOCH, null, "T1");
         bus.publish(created);
         Checks.equal(1, log.events().size());
         Checks.equal(1, failures.size());
@@ -42,14 +42,17 @@ final class ObserverTests {
         Checks.equal(0, inbox.of("T1").size());
         bus.publish(new SchoolEvent(EventType.GRADE_RECORDED, "Quiz: 82.0", Instant.EPOCH, "s1", "T1"));
         bus.publish(new SchoolEvent(EventType.STUDENT_ENROLLED, "Amina enrolled in CS101", Instant.EPOCH, "S1", "T1"));
-        bus.publish(new SchoolEvent(EventType.REPORT_READY, "Report issued", Instant.EPOCH, "S1", ""));
-        Checks.equal(2, inbox.of("S1").size());
+        bus.publish(new SchoolEvent(EventType.REPORT_READY, "Report issued", Instant.EPOCH, "S1", null));
+        bus.publish(new SchoolEvent(EventType.COURSE_COMPLETED, "Amina completed CS101", Instant.EPOCH, "S1", "T1"));
+        bus.publish(new SchoolEvent(EventType.ACCESS_DENIED, "Viewer was denied ENROLL", Instant.EPOCH, null, null));
+        Checks.equal(3, inbox.of("S1").size());
         Checks.equal("New grade: Quiz: 82.0", inbox.of("s1").get(0));
         Checks.equal("Report issued", inbox.of("S1").get(1));
+        Checks.equal("Amina completed CS101", inbox.of("S1").get(2));
         Checks.equal(1, inbox.of("T1").size());
         Checks.equal("New student: Amina enrolled in CS101", inbox.of("T1").get(0));
         Checks.equal(0, inbox.of("S2").size());
-        Checks.equal(5, log.events().size());
+        Checks.equal(7, log.events().size());
         Checks.fails(UnsupportedOperationException.class, () -> inbox.of("S1").clear());
         Checks.fails(NullPointerException.class, () -> new StudentNotifier(null));
         Checks.fails(NullPointerException.class, () -> new TeacherNotifier(null));
@@ -62,10 +65,12 @@ final class ObserverTests {
         events.subscribe(new TeacherNotifier(mail));
         SchoolFacade school = new SchoolFacade(events);
         DemoData.load(school);
-        Checks.equal(2, mail.of("S001").size());
+        Checks.equal(3, mail.of("S001").size());
         Checks.equal(1, mail.of("S002").size());
+        Checks.equal(2, mail.of("S003").size());
+        Checks.equal("Amina Bekova completed CS101 with 89.2 / B", mail.of("S001").get(2));
         Checks.equal(3, mail.of("T001").size());
-        Checks.equal(1, mail.of("T002").size());
+        Checks.equal(2, mail.of("T002").size());
 
         int before = activity.events().size();
         school.recordGrade(AccessModes.admin(), "s002", "cs101", new Assessment("Quiz", 72, 40));
@@ -75,7 +80,9 @@ final class ObserverTests {
         Checks.fails(AccessDeniedException.class,
                 () -> school.recordGrade(AccessModes.viewer(), "S002", "CS101", new Assessment("Final exam", 80, 60)));
         Checks.equal(2, mail.of("S002").size());
-        school.issueReport(AccessModes.viewer(), "S002");
-        Checks.equal("Report issued for Dias Alimov, credits earned: 5", mail.of("S002").get(2));
+        school.issueReport(AccessModes.admin(), "S002");
+        Checks.equal("Report issued for Dias Alimov, credits earned: 0", mail.of("S002").get(2));
+        school.issueReport(AccessModes.admin(), "S001");
+        Checks.equal("Report issued for Amina Bekova, credits earned: 5", mail.of("S001").get(3));
     }
 }

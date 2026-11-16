@@ -18,7 +18,7 @@ public final class PersonRegistry {
 
     public Person register(Role role, String id, String name) {
         PersonCreator creator = creators.get(Objects.requireNonNull(role));
-        Person person = creator.register(id, name);
+        Person person = creator.create(id, name);
         if (people.containsKey(person.id())) {
             throw new IllegalArgumentException("This person ID already exists");
         }

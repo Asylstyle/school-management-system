@@ -5,7 +5,7 @@
 | Package | Content |
 | --- | --- |
 | `school` | `ConsoleApp`, `ConsoleInput`, `DemoData` |
-| `school.core` | `SchoolFacade`, `EnrollmentService`, `GradingService`, `Course`, `Enrollment`, `StudentReport`, `CsvExport` |
+| `school.core` | `SchoolFacade`, `CourseCatalog`, `EnrollmentService`, `GradingService`, `Course`, `Enrollment`, `StudentReport`, `CsvExport` |
 | `school.people` | `Person`, `Student`, `Teacher`, `Role`, creators, `PersonRegistry` |
 | `school.access` | `Access`, decorators, `AccessModes`, `Permission`, `AccessDeniedException` |
 | `school.grading` | `GradingStrategy`, two policies, `GradingPolicies`, `Assessment`, `GradeResult` |
@@ -37,6 +37,7 @@ classDiagram
   GradingStrategy <|.. PassFailGrading
   GradingPolicies o-- GradingStrategy
   SchoolFacade *-- PersonRegistry
+  SchoolFacade *-- CourseCatalog
   SchoolFacade *-- EnrollmentService
   SchoolFacade *-- GradingService
   SchoolFacade --> Access

@@ -6,10 +6,12 @@ import java.nio.file.Path;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 import school.access.Access;
 import school.access.AccessDeniedException;
 import school.access.AccessModes;
+import school.access.AuditedAccess;
 import school.access.Permission;
 import school.core.Course;
 import school.core.CsvExport;
@@ -33,13 +35,14 @@ public final class ConsoleApp {
     private final ActivityLog log;
     private final Inbox inbox;
     private final ConsoleInput input;
-    private Access access = AccessModes.admin();
+    private Access access;
 
     ConsoleApp(SchoolFacade school, ActivityLog log, Inbox inbox, Scanner scanner) {
         this.school = school;
         this.log = log;
         this.inbox = inbox;
         this.input = new ConsoleInput(scanner);
+        this.access = audited(AccessModes.admin());
     }
 
     public static void main(String[] args) {
@@ -90,8 +93,8 @@ public final class ConsoleApp {
         System.out.println("1 Overview        2 People          3 Add person");
         System.out.println("4 Courses         5 Add course      6 Enroll student");
         System.out.println("7 Gradebook       8 Record grade    9 Activity");
-        System.out.println("10 Access mode    11 Export CSV     12 Student report");
-        System.out.println("13 Notifications  0 Exit");
+        System.out.println("10 Access mode    11 Export CSV     12 Issue report");
+        System.out.println("13 Notifications  14 Complete course 0 Exit");
     }
 
     private boolean handle(String choice) {
@@ -109,6 +112,7 @@ public final class ConsoleApp {
             case "11" -> export();
             case "12" -> studentReport();
             case "13" -> notifications();
+            case "14" -> completeCourse();
             case "0" -> {
                 return false;
             }
@@ -177,7 +181,8 @@ public final class ConsoleApp {
         access.require(Permission.MANAGE_COURSES);
         String code = input.text("Code");
         String title = input.text("Title");
-        Course.Builder builder = Course.builder(code, title).teacher(input.text("Teacher ID"));
+        String teacher = input.text("Teacher ID");
+        Course.Builder builder = Course.builder(code, title, teacher);
 
         String capacity = input.text("Capacity (empty = default)");
         if (!capacity.isEmpty()) {
@@ -217,10 +222,11 @@ public final class ConsoleApp {
         for (Enrollment enrollment : school.enrollments(access)) {
             String name = school.personName(access, enrollment.studentId());
             String result = school.result(access, enrollment).map(GradeResult::display).orElse("Not graded");
-            System.out.printf("%-18s %-8s %s%n", name, enrollment.courseCode(), result);
+            String status = enrollment.completed() ? " (completed)" : "";
+            System.out.printf("%-18s %-8s %s%s%n", name, enrollment.courseCode(), result, status);
             for (Assessment assessment : enrollment.assessments()) {
-                System.out.println("  " + assessment.title() + ": " + assessment.score()
-                        + " (weight " + assessment.weight() + ")");
+                System.out.printf(Locale.ROOT, "  %s: %.1f (weight %.1f)%n",
+                        assessment.title(), assessment.score(), assessment.weight());
             }
         }
     }
@@ -244,8 +250,20 @@ public final class ConsoleApp {
         }
     }
 
+    private void completeCourse() {
+        access.require(Permission.RECORD_GRADES);
+        String student = input.text("Student ID");
+        String course = input.text("Course code");
+        GradeResult result = school.completeCourse(access, student, course);
+        System.out.println("Course completed: " + result.display());
+    }
+
     private void changeAccess() {
-        access = AccessModes.byName(input.command("Mode (" + AccessModes.names() + ")"));
+        access = audited(AccessModes.byName(input.command("Mode (" + AccessModes.names() + ")")));
+    }
+
+    private Access audited(Access mode) {
+        return new AuditedAccess(mode, school::reportDeniedAccess);
     }
 
     private void export() {
@@ -263,6 +281,7 @@ public final class ConsoleApp {
     }
 
     private void studentReport() {
+        access.require(Permission.ISSUE_REPORTS);
         StudentReport report = school.issueReport(access, input.text("Student ID"));
         System.out.println("\n--- REPORT: " + report.studentName() + " (" + report.studentId() + ") ---");
         for (String line : report.lines()) {

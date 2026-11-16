@@ -5,5 +5,6 @@ public enum Permission {
     MANAGE_PEOPLE,
     MANAGE_COURSES,
     ENROLL,
-    RECORD_GRADES
+    RECORD_GRADES,
+    ISSUE_REPORTS
 }

@@ -28,8 +28,8 @@ public final class Course {
         prerequisites = List.copyOf(builder.prerequisites);
     }
 
-    public static Builder builder(String code, String title) {
-        return new Builder(code, title);
+    public static Builder builder(String code, String title, String teacherId) {
+        return new Builder(code, title, teacherId);
     }
 
     public String code() {
@@ -72,21 +72,17 @@ public final class Course {
     public static final class Builder {
         private final String code;
         private final String title;
-        private String teacherId;
+        private final String teacherId;
         private int capacity = 25;
         private GradingStrategy grading = new WeightedGrading();
         private String semester = "Fall";
         private int credits = 5;
         private final List<String> prerequisites = new ArrayList<>();
 
-        private Builder(String code, String title) {
+        private Builder(String code, String title, String teacherId) {
             this.code = code;
             this.title = title;
-        }
-
-        public Builder teacher(String id) {
-            teacherId = id;
-            return this;
+            this.teacherId = teacherId;
         }
 
         public Builder capacity(int value) {

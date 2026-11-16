@@ -11,7 +11,7 @@ public final class TeacherNotifier implements SchoolListener {
 
     @Override
     public void onEvent(SchoolEvent event) {
-        if (event.type() == EventType.STUDENT_ENROLLED) {
+        if (event.type() == EventType.STUDENT_ENROLLED && event.teacherId() != null) {
             inbox.deliver(event.teacherId(), "New student: " + event.message());
         }
     }

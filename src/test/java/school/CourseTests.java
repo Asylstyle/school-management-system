@@ -6,7 +6,7 @@ import school.grading.PassFailGrading;
 
 final class CourseTests {
     static void run() {
-        var builder = Course.builder(" cs1 ", " Computing ").teacher("t1");
+        var builder = Course.builder(" cs1 ", " Computing ", "t1");
         Course first = builder.build();
         Checks.equal("CS1", first.code());
         Checks.equal("Computing", first.title());
@@ -31,11 +31,11 @@ final class CourseTests {
         Checks.equal(List.of(), first.prerequisites());
         Checks.fails(UnsupportedOperationException.class, () -> second.prerequisites().clear());
 
-        Checks.fails(IllegalArgumentException.class, () -> Course.builder("C", "Title").build());
+        Checks.fails(IllegalArgumentException.class, () -> Course.builder("C", "Title", null).build());
         Checks.fails(IllegalArgumentException.class, () -> builder.capacity(0).build());
-        Checks.fails(IllegalArgumentException.class, () -> Course.builder(" ", "Title").teacher("T1").build());
-        Checks.fails(IllegalArgumentException.class, () -> Course.builder("C", "Title").teacher("T1").credits(0).build());
-        Checks.fails(IllegalArgumentException.class, () -> Course.builder("C", "Title").teacher("T1").semester(" ").build());
-        Checks.fails(NullPointerException.class, () -> Course.builder("C", "Title").teacher("T1").grading(null).build());
+        Checks.fails(IllegalArgumentException.class, () -> Course.builder(" ", "Title", "T1").build());
+        Checks.fails(IllegalArgumentException.class, () -> Course.builder("C", "Title", "T1").credits(0).build());
+        Checks.fails(IllegalArgumentException.class, () -> Course.builder("C", "Title", "T1").semester(" ").build());
+        Checks.fails(NullPointerException.class, () -> Course.builder("C", "Title", "T1").grading(null).build());
     }
 }

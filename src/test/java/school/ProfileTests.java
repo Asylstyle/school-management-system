@@ -8,13 +8,13 @@ import school.people.TeacherCreator;
 
 final class ProfileTests {
     static void run() {
-        Person student = new StudentCreator().register(" s1 ", " Amina ");
+        Person student = new StudentCreator().create(" s1 ", " Amina ");
         Checks.equal(Role.STUDENT, student.role());
         Checks.equal("S1", student.id());
         Checks.equal("Amina", student.name());
-        Checks.equal(Role.TEACHER, new TeacherCreator().register("T1", "Dana").role());
-        Checks.fails(IllegalArgumentException.class, () -> new StudentCreator().register(" ", "Amina"));
-        Checks.fails(IllegalArgumentException.class, () -> new TeacherCreator().register("T1", null));
+        Checks.equal(Role.TEACHER, new TeacherCreator().create("T1", "Dana").role());
+        Checks.fails(IllegalArgumentException.class, () -> new StudentCreator().create(" ", "Amina"));
+        Checks.fails(IllegalArgumentException.class, () -> new TeacherCreator().create("T1", null));
 
         PersonRegistry registry = new PersonRegistry();
         Checks.equal(Role.STUDENT, registry.register(Role.STUDENT, "s1", "Amina").role());

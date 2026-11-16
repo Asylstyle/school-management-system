@@ -7,16 +7,10 @@ public final class RegistrarAccess extends AccessDecorator {
 
     @Override
     public boolean allows(Permission permission) {
-        if (permission == Permission.MANAGE_PEOPLE) {
-            return true;
-        }
-        if (permission == Permission.MANAGE_COURSES) {
-            return true;
-        }
-        if (permission == Permission.ENROLL) {
-            return true;
-        }
-        return super.allows(permission);
+        return switch (permission) {
+            case MANAGE_PEOPLE, MANAGE_COURSES, ENROLL -> true;
+            default -> super.allows(permission);
+        };
     }
 
     @Override

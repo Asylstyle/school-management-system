@@ -21,22 +21,18 @@ public final class DemoData {
         school.register(admin, Role.STUDENT, "S002", "Dias Alimov");
         school.register(admin, Role.STUDENT, "S003", "Sara Omarova");
 
-        school.addCourse(admin, Course.builder("CS101", "Computer Science")
-                .teacher("T001")
+        school.addCourse(admin, Course.builder("CS101", "Computer Science", "T001")
                 .capacity(20)
                 .build());
-        school.addCourse(admin, Course.builder("MAT101", "Applied Mathematics")
-                .teacher("T002")
+        school.addCourse(admin, Course.builder("MAT101", "Applied Mathematics", "T002")
                 .capacity(24)
                 .build());
-        school.addCourse(admin, Course.builder("ART101", "Creative Workshop")
-                .teacher("T001")
+        school.addCourse(admin, Course.builder("ART101", "Creative Workshop", "T001")
                 .capacity(12)
                 .credits(3)
                 .grading(new PassFailGrading())
                 .build());
-        school.addCourse(admin, Course.builder("CS201", "Algorithms")
-                .teacher("T002")
+        school.addCourse(admin, Course.builder("CS201", "Algorithms", "T002")
                 .capacity(15)
                 .semester("Spring")
                 .credits(6)
@@ -52,5 +48,9 @@ public final class DemoData {
         school.recordGrade(admin, "S001", "CS101", new Assessment("Quiz", 82, 40));
         school.recordGrade(admin, "S002", "CS101", new Assessment("Project", 85, 60));
         school.recordGrade(admin, "S003", "ART101", new Assessment("Portfolio", 91, 100));
+
+        school.completeCourse(admin, "S001", "CS101");
+        school.completeCourse(admin, "S003", "ART101");
+        school.enroll(admin, "S001", "CS201");
     }
 }

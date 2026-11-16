@@ -34,8 +34,16 @@ public final class EventBus {
             try {
                 listener.onEvent(event);
             } catch (RuntimeException failure) {
-                onFailure.accept(failure);
+                reportFailure(failure);
             }
+        }
+    }
+
+    private void reportFailure(RuntimeException failure) {
+        try {
+            onFailure.accept(failure);
+        } catch (RuntimeException ignored) {
+            // A broken error handler must not stop delivery to the other listeners.
         }
     }
 }

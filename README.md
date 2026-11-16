@@ -22,7 +22,7 @@ sh build.sh test
 sh build.sh demo
 ```
 
-The program starts with fictional sample records: three students, two teachers and four courses. Use `0` to exit. Changes stay in memory for the current session. Menu option `11` exports the gradebook as a CSV file; it is a report, not a restorable backup.
+The program starts with fictional sample records: three students, two teachers and four courses; two courses are already completed. Use `0` to exit. Changes stay in memory for the current session. Menu option `11` exports the gradebook as a CSV file; it is a report, not a restorable backup.
 
 ## Features
 
@@ -31,8 +31,10 @@ The program starts with fictional sample records: three students, two teachers a
 - Enroll students, preventing duplicate enrollments, overfilled courses and enrollment without passed prerequisites.
 - Record assessments with scores from 0 to 100 and positive weights.
 - Calculate weighted letter grades or pass/fail results.
-- Issue a student report with results and earned credits.
-- Deliver notifications to the inbox of a student (new grade, issued report) or a teacher (new student in a course).
+- Complete a course for a student; only completed and passed courses count for prerequisites and credits.
+- Issue a student report with results, course status and earned credits.
+- Deliver notifications to the inbox of a student (new grade, completed course, issued report) or a teacher (new student in a course).
+- Write refused actions to the activity log.
 - View an activity log using UTC+05:00.
 - Switch between viewer, registrar, grading and combined administrator permissions.
 - Export grades to CSV with escaped fields and spreadsheet formula protection.
@@ -46,13 +48,13 @@ Access modes demonstrate permission composition. They are not user authenticatio
 | Pattern | Classes | Responsibility | Module owner |
 | --- | --- | --- | --- |
 | Factory Method | `PersonCreator`, `StudentCreator`, `TeacherCreator`, `PersonRegistry` | Create the correct person subtype; the registry keeps one creator per role | adilzhandev |
-| Decorator | `Access`, `RegistrarAccess`, `GradingAccess`, `AccessModes` | Add permissions to a basic viewer | adilzhandev |
+| Decorator | `Access`, `RegistrarAccess`, `GradingAccess`, `AuditedAccess`, `AccessModes` | Add permissions to a basic viewer and audit refused checks | adilzhandev |
 | Builder | `Course.Builder` | Construct a validated, immutable course with optional values | Nurlan-byte |
 | Strategy | `GradingStrategy`, `WeightedGrading`, `PassFailGrading`, `GradingPolicies` | Choose a course's grading policy | Nurlan-byte |
 | Observer | `EventBus`, `SchoolListener`, `ActivityLog`, `StudentNotifier`, `TeacherNotifier`, `Inbox` | Deliver successful operation events to listeners | Asylstyle |
-| Facade | `SchoolFacade` over `PersonRegistry`, `EnrollmentService`, `GradingService` | Check permissions, coordinate the services and publish events | Asylstyle |
+| Facade | `SchoolFacade` over `PersonRegistry`, `CourseCatalog`, `EnrollmentService`, `GradingService` | Check permissions, coordinate the services and publish events | Asylstyle |
 
-The console calls the facade. The facade checks the decorated permission, then gives the work to three services: the person registry uses creators, the enrollment service keeps courses built with the builder, and the grading service uses the strategy stored on each course. Successful operations publish events to the activity log and to the notifiers.
+The console calls the facade. The facade checks the decorated permission, then gives the work to four services: the person registry uses creators, the course catalog keeps courses built with the builder, the enrollment service keeps enrollments, and the grading service uses the strategy stored on each course. The console wraps the current access mode in `AuditedAccess`, so refused checks reach the activity log through the facade. Successful operations publish events to the activity log and to the notifiers.
 
 ## Grading
 

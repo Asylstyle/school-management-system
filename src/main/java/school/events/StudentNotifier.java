@@ -11,11 +11,15 @@ public final class StudentNotifier implements SchoolListener {
 
     @Override
     public void onEvent(SchoolEvent event) {
-        if (event.type() == EventType.GRADE_RECORDED) {
-            inbox.deliver(event.studentId(), "New grade: " + event.message());
+        if (event.studentId() == null) {
+            return;
         }
-        if (event.type() == EventType.REPORT_READY) {
-            inbox.deliver(event.studentId(), event.message());
+        switch (event.type()) {
+            case GRADE_RECORDED -> inbox.deliver(event.studentId(), "New grade: " + event.message());
+            case COURSE_COMPLETED, REPORT_READY -> inbox.deliver(event.studentId(), event.message());
+            default -> {
+                // Other events are not addressed to the student.
+            }
         }
     }
 }

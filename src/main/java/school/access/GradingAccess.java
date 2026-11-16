@@ -7,10 +7,10 @@ public final class GradingAccess extends AccessDecorator {
 
     @Override
     public boolean allows(Permission permission) {
-        if (permission == Permission.RECORD_GRADES) {
-            return true;
-        }
-        return super.allows(permission);
+        return switch (permission) {
+            case RECORD_GRADES, ISSUE_REPORTS -> true;
+            default -> super.allows(permission);
+        };
     }
 
     @Override

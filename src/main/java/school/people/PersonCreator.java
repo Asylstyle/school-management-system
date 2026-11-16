@@ -1,13 +1,6 @@
 package school.people;
 
-import school.common.Validation;
-
+/** Factory Method: each subclass decides which kind of person to create. */
 public abstract class PersonCreator {
-    public final Person register(String id, String name) {
-        String checkedId = Validation.id(id, "ID");
-        String checkedName = Validation.text(name, "Name");
-        return create(checkedId, checkedName);
-    }
-
-    protected abstract Person create(String id, String name);
+    public abstract Person create(String id, String name);
 }

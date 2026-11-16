@@ -1,7 +1,7 @@
 package school.people;
 
 public final class Student extends Person {
-    public Student(String id, String name) {
+    Student(String id, String name) {
         super(id, name);
     }
 

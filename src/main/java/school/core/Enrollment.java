@@ -10,6 +10,7 @@ public final class Enrollment {
     private final String studentId;
     private final String courseCode;
     private final List<Assessment> assessments = new ArrayList<>();
+    private boolean completed;
 
     Enrollment(String studentId, String courseCode) {
         this.studentId = Validation.id(studentId, "Student ID");
@@ -28,7 +29,15 @@ public final class Enrollment {
         return List.copyOf(assessments);
     }
 
+    public boolean completed() {
+        return completed;
+    }
+
     void add(Assessment assessment) {
         assessments.add(Objects.requireNonNull(assessment));
+    }
+
+    void complete() {
+        completed = true;
     }
 }

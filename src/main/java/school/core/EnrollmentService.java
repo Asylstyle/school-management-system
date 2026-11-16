@@ -1,37 +1,11 @@
 package school.core;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import school.common.Validation;
 
 public final class EnrollmentService {
-    private final Map<String, Course> courses = new LinkedHashMap<>();
     private final List<Enrollment> enrollments = new ArrayList<>();
-
-    public void addCourse(Course course) {
-        if (courses.containsKey(course.code())) {
-            throw new IllegalArgumentException("This course code already exists");
-        }
-        courses.put(course.code(), course);
-    }
-
-    public boolean hasCourse(String code) {
-        return courses.containsKey(Validation.id(code, "Course code"));
-    }
-
-    public Course course(String code) {
-        Course course = courses.get(Validation.id(code, "Course code"));
-        if (course == null) {
-            throw new IllegalArgumentException("Course not found");
-        }
-        return course;
-    }
-
-    public List<Course> courses() {
-        return List.copyOf(courses.values());
-    }
 
     public Enrollment enroll(String studentId, Course course) {
         if (isEnrolled(studentId, course.code())) {
@@ -69,7 +43,7 @@ public final class EnrollmentService {
                 result.add(enrollment);
             }
         }
-        return result;
+        return List.copyOf(result);
     }
 
     public long count(String courseCode) {
