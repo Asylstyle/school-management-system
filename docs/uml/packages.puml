@@ -1,0 +1,23 @@
+@startuml packages
+!pragma layout smetana
+title SchoolDesk - packages
+skinparam shadowing false
+
+package "ConsoleApp, ConsoleInput, DemoData" as school
+package "SchoolFacade, EnrollmentService,\nGradingService, Course, Enrollment,\nStudentReport, CsvExport" as school.core
+package "PersonRegistry, PersonCreator,\nPerson, Student, Teacher" as school.people
+package "Access, AccessDecorator,\nAccessModes, Permission" as school.access
+package "GradingStrategy, GradingPolicies,\nAssessment, GradeResult" as school.grading
+package "EventBus, SchoolListener,\nnotifiers, Inbox" as school.events
+package "Validation" as school.common
+
+school ..> school.core
+school.core ..> school.people
+school.core ..> school.access
+school.core ..> school.grading
+school.core ..> school.events
+school.core ..> school.common
+school.people ..> school.common
+school.grading ..> school.common
+school.events ..> school.common
+@enduml

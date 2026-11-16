@@ -18,17 +18,24 @@ class PassFailGrading {
 }
 class GradeMath {
   ~{static} average(items: List<Assessment>): double
+  ~{static} round(score: double): double
 }
 class GradeResult {
   +score(): double
   +label(): String
+  +passed(): boolean
   +display(): String
+}
+class GradingPolicies {
+  -{static} POLICIES: Map<String, GradingStrategy>
+  +{static} byName(name: String): GradingStrategy
+  +{static} names(): String
 }
 class Course {
   +grading(): GradingStrategy
 }
-class SchoolFacade {
-  +result(e: Enrollment): Optional<GradeResult>
+class GradingService {
+  +result(enrollment, course): Optional<GradeResult>
 }
 
 GradingStrategy <|.. WeightedGrading
@@ -36,6 +43,7 @@ GradingStrategy <|.. PassFailGrading
 WeightedGrading ..> GradeMath
 PassFailGrading ..> GradeMath
 GradingStrategy ..> GradeResult
+GradingPolicies o-- "1..*" GradingStrategy
 Course --> GradingStrategy
-SchoolFacade ..> Course
+GradingService ..> Course
 @enduml

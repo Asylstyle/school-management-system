@@ -7,25 +7,29 @@ actor User
 participant ConsoleApp
 participant SchoolFacade
 participant "access: Access" as Access
+participant PersonRegistry
 participant StudentCreator
-participant SchoolStore
+participant EnrollmentService
 participant EventBus
 
 User -> ConsoleApp : 3 Add person (student)
 ConsoleApp -> SchoolFacade : register(access, STUDENT, id, name)
 SchoolFacade -> Access : require(MANAGE_PEOPLE)
-SchoolFacade -> StudentCreator : register(id, name)
+SchoolFacade -> PersonRegistry : register(STUDENT, id, name)
+PersonRegistry -> StudentCreator : register(id, name)
 StudentCreator -> StudentCreator : create(id, name)
-StudentCreator --> SchoolFacade : Student
-SchoolFacade -> SchoolStore : check id is free, save person
+StudentCreator --> PersonRegistry : Student
+PersonRegistry --> SchoolFacade : Student
 SchoolFacade -> EventBus : publish(PERSON_REGISTERED)
 ConsoleApp --> User : Person registered.
 
 User -> ConsoleApp : 6 Enroll student
 ConsoleApp -> SchoolFacade : enroll(access, studentId, courseCode)
 SchoolFacade -> Access : require(ENROLL)
-SchoolFacade -> SchoolStore : check student, duplicate, capacity
-SchoolFacade -> SchoolStore : save Enrollment
+SchoolFacade -> EnrollmentService : course(courseCode)
+SchoolFacade -> PersonRegistry : student(studentId)
+SchoolFacade -> SchoolFacade : check prerequisites
+SchoolFacade -> EnrollmentService : enroll(studentId, course)
 SchoolFacade -> EventBus : publish(STUDENT_ENROLLED)
 ConsoleApp --> User : Enrollment completed.
 @enduml

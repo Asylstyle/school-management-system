@@ -12,26 +12,39 @@ class SchoolFacade {
   +addCourse(access, course)
   +enroll(access, studentId, courseCode)
   +recordGrade(access, studentId, courseCode, assessment)
-  +people(): List<Person>
-  +courses(): List<Course>
-  +enrollments(): List<Enrollment>
-  +result(e: Enrollment): Optional<GradeResult>
+  +issueReport(access, studentId): StudentReport
+  +people(access): List<Person>
+  +courses(access): List<Course>
+  +enrollments(access): List<Enrollment>
+  +result(access, enrollment): Optional<GradeResult>
 }
-class SchoolStore
-class EventBus
-abstract class PersonCreator
-interface Access
-class Course
-class Enrollment
-interface GradingStrategy
+class PersonRegistry {
+  +register(role, id, name): Person
+  +student(id): Person
+  +teacher(id): Person
+}
+class EnrollmentService {
+  +addCourse(course)
+  +enroll(studentId, course): Enrollment
+  +find(studentId, courseCode): Enrollment
+}
+class GradingService {
+  +record(enrollment, assessment)
+  +result(enrollment, course): Optional<GradeResult>
+  +passed(enrollment, course): boolean
+}
+class EventBus {
+  +publish(event)
+}
+interface Access {
+  +require(permission)
+}
 
 ConsoleApp --> SchoolFacade
 CsvExport ..> SchoolFacade
-SchoolFacade *-- SchoolStore
+SchoolFacade *-- PersonRegistry
+SchoolFacade *-- EnrollmentService
+SchoolFacade *-- GradingService
 SchoolFacade --> EventBus
-SchoolFacade ..> PersonCreator
 SchoolFacade ..> Access
-SchoolFacade ..> Course
-SchoolFacade ..> Enrollment
-SchoolFacade ..> GradingStrategy
 @enduml

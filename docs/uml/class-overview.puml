@@ -15,13 +15,17 @@ class SchoolFacade {
   +addCourse(access, course)
   +enroll(access, studentId, courseCode)
   +recordGrade(access, studentId, courseCode, assessment)
-  +result(enrollment): Optional<GradeResult>
+  +issueReport(access, studentId): StudentReport
 }
-class SchoolStore
+class PersonRegistry
+class EnrollmentService
+class GradingService
 class EventBus
 interface SchoolListener
 class ActivityLog
 class StudentNotifier
+class TeacherNotifier
+class Inbox
 abstract class PersonCreator
 class StudentCreator
 class TeacherCreator
@@ -33,23 +37,31 @@ class ReadOnlyAccess
 abstract class AccessDecorator
 class RegistrarAccess
 class GradingAccess
+class AccessModes
 class Course
 class "Course.Builder" as CourseBuilder
 interface GradingStrategy
 class WeightedGrading
 class PassFailGrading
+class GradingPolicies
 class Enrollment
 class Assessment
 
 ConsoleApp --> SchoolFacade
 ConsoleApp --> Access
-SchoolFacade *-- SchoolStore
+SchoolFacade *-- PersonRegistry
+SchoolFacade *-- EnrollmentService
+SchoolFacade *-- GradingService
 SchoolFacade --> EventBus
-SchoolFacade ..> PersonCreator : uses
 SchoolFacade ..> Access : checks
+PersonRegistry o-- "1..*" PersonCreator
+PersonRegistry o-- "0..*" Person
 EventBus o-- "0..*" SchoolListener
 SchoolListener <|.. ActivityLog
 SchoolListener <|.. StudentNotifier
+SchoolListener <|.. TeacherNotifier
+StudentNotifier --> Inbox
+TeacherNotifier --> Inbox
 PersonCreator <|-- StudentCreator
 PersonCreator <|-- TeacherCreator
 Person <|-- Student
@@ -60,12 +72,14 @@ Access <|.. AccessDecorator
 AccessDecorator o-- Access : wrapped
 AccessDecorator <|-- RegistrarAccess
 AccessDecorator <|-- GradingAccess
+AccessModes ..> Access : builds
 CourseBuilder ..> Course : builds
 Course --> GradingStrategy
 GradingStrategy <|.. WeightedGrading
 GradingStrategy <|.. PassFailGrading
-SchoolStore o-- "0..*" Person
-SchoolStore o-- "0..*" Course
-SchoolStore o-- "0..*" Enrollment
+GradingPolicies o-- "1..*" GradingStrategy
+EnrollmentService o-- "0..*" Course
+EnrollmentService o-- "0..*" Enrollment
 Enrollment *-- "0..*" Assessment
+GradingService ..> Enrollment
 @enduml

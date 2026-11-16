@@ -6,20 +6,23 @@ autonumber
 actor User
 participant ConsoleApp
 participant SchoolFacade
+participant GradingService
 participant Course
 participant "grading: GradingStrategy" as Strategy
 participant GradeMath
 
 User -> ConsoleApp : 7 Gradebook
-ConsoleApp -> SchoolFacade : enrollments()
+ConsoleApp -> SchoolFacade : enrollments(access)
 loop for each enrollment
-  ConsoleApp -> SchoolFacade : result(enrollment)
-  SchoolFacade -> Course : grading()
-  Course --> SchoolFacade : strategy of this course
-  SchoolFacade -> Strategy : calculate(assessments)
+  ConsoleApp -> SchoolFacade : result(access, enrollment)
+  SchoolFacade -> GradingService : result(enrollment, course)
+  GradingService -> Course : grading()
+  Course --> GradingService : strategy of this course
+  GradingService -> Strategy : calculate(assessments)
   Strategy -> GradeMath : average(assessments)
-  GradeMath --> Strategy : score
-  Strategy --> SchoolFacade : GradeResult(score, label)
+  GradeMath --> Strategy : rounded score
+  Strategy --> GradingService : GradeResult(score, label)
+  GradingService --> SchoolFacade : Optional<GradeResult>
   SchoolFacade --> ConsoleApp : Optional<GradeResult>
 end
 ConsoleApp --> User : student, course, score / label

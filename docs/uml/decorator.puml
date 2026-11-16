@@ -33,6 +33,14 @@ enum Permission {
   ENROLL
   RECORD_GRADES
 }
+class AccessModes {
+  +{static} viewer(): Access
+  +{static} registrar(): Access
+  +{static} grading(): Access
+  +{static} admin(): Access
+  +{static} byName(name: String): Access
+}
+class AccessDeniedException
 
 Access <|.. ReadOnlyAccess
 Access <|.. AccessDecorator
@@ -40,4 +48,6 @@ AccessDecorator o-- Access : wrapped
 AccessDecorator <|-- RegistrarAccess
 AccessDecorator <|-- GradingAccess
 Access ..> Permission
+Access ..> AccessDeniedException : throws
+AccessModes ..> Access : builds
 @enduml

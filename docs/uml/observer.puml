@@ -19,27 +19,40 @@ class ActivityLog {
   +events(): List<SchoolEvent>
 }
 class StudentNotifier {
-  -channel: Consumer<String>
   +onEvent(e: SchoolEvent)
+}
+class TeacherNotifier {
+  +onEvent(e: SchoolEvent)
+}
+class Inbox {
+  -messages: Map<String, List<String>>
+  +deliver(personId: String, text: String)
+  +of(personId: String): List<String>
 }
 class SchoolEvent {
   +type(): EventType
   +message(): String
   +at(): Instant
+  +studentId(): String
+  +teacherId(): String
 }
 enum EventType {
   PERSON_REGISTERED
   COURSE_CREATED
   STUDENT_ENROLLED
   GRADE_RECORDED
+  REPORT_READY
 }
 class SchoolFacade {
-  -emit(type, message)
+  -emit(type, message, studentId, teacherId)
 }
 
 EventBus o-- "0..*" SchoolListener
 SchoolListener <|.. ActivityLog
 SchoolListener <|.. StudentNotifier
+SchoolListener <|.. TeacherNotifier
+StudentNotifier --> Inbox
+TeacherNotifier --> Inbox
 EventBus ..> SchoolEvent
 SchoolEvent --> EventType
 SchoolFacade --> EventBus : publishes

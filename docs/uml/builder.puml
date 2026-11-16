@@ -10,6 +10,9 @@ class Course {
   -teacherId: String
   -capacity: int
   -grading: GradingStrategy
+  -semester: String
+  -credits: int
+  -prerequisites: List<String>
   -Course(b: Builder)
   +{static} builder(code, title): Builder
   +code(): String
@@ -17,6 +20,9 @@ class Course {
   +teacherId(): String
   +capacity(): int
   +grading(): GradingStrategy
+  +semester(): String
+  +credits(): int
+  +prerequisites(): List<String>
 }
 class "Course.Builder" as Builder {
   -code: String
@@ -24,9 +30,15 @@ class "Course.Builder" as Builder {
   -teacherId: String
   -capacity: int = 25
   -grading: GradingStrategy
+  -semester: String = "Fall"
+  -credits: int = 5
+  -prerequisites: List<String>
   +teacher(id: String): Builder
   +capacity(value: int): Builder
   +grading(value: GradingStrategy): Builder
+  +semester(value: String): Builder
+  +credits(value: int): Builder
+  +prerequisite(courseCode: String): Builder
   +build(): Course
 }
 interface GradingStrategy

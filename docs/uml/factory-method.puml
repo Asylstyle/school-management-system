@@ -31,8 +31,11 @@ enum Role {
   STUDENT
   TEACHER
 }
-class SchoolFacade {
-  +register(access, role, id, name): Person
+class PersonRegistry {
+  -creators: Map<Role, PersonCreator>
+  -people: Map<String, Person>
+  +register(role, id, name): Person
+  +find(id: String): Person
 }
 
 PersonCreator <|-- StudentCreator
@@ -42,5 +45,5 @@ Person <|-- Teacher
 StudentCreator ..> Student : creates
 TeacherCreator ..> Teacher : creates
 Person --> Role
-SchoolFacade ..> PersonCreator : chooses by role
+PersonRegistry o-- "1 per role" PersonCreator
 @enduml
