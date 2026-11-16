@@ -2,7 +2,7 @@
 --- SCHOOL OVERVIEW ---
 Students: 3
 Teachers: 2
-Courses: 3
+Courses: 4
 Enrollments: 4
 
 --- PEOPLE ---
@@ -13,9 +13,11 @@ S002     STUDENT    Dias Alimov
 S003     STUDENT    Sara Omarova
 
 --- COURSES ---
-CS101 | Computer Science | Dana Karimova | 2/20 seats | Weighted letters
-MAT101 | Applied Mathematics | Arman Sadykov | 1/24 seats | Weighted letters
-ART101 | Creative Workshop | Dana Karimova | 1/12 seats | Pass / Fail
+CS101 | Computer Science | Dana Karimova | 2/20 seats | Weighted letters | Fall, 5 credits
+MAT101 | Applied Mathematics | Arman Sadykov | 1/24 seats | Weighted letters | Fall, 5 credits
+ART101 | Creative Workshop | Dana Karimova | 1/12 seats | Pass / Fail | Fall, 3 credits
+CS201 | Algorithms | Arman Sadykov | 0/15 seats | Weighted letters | Spring, 6 credits
+  requires: CS101
 
 --- GRADEBOOK ---
 Amina Bekova       CS101    89.2 / B
@@ -28,19 +30,20 @@ Sara Omarova       ART101   91.0 / PASS
 Amina Bekova       MAT101   Not graded
 
 --- ACTIVITY (UTC+05:00) ---
-20:57:30 | Dana Karimova registered as TEACHER
-20:57:30 | Arman Sadykov registered as TEACHER
-20:57:30 | Amina Bekova registered as STUDENT
-20:57:30 | Dias Alimov registered as STUDENT
-20:57:30 | Sara Omarova registered as STUDENT
-20:57:30 | CS101 created: Computer Science
-20:57:30 | MAT101 created: Applied Mathematics
-20:57:30 | ART101 created: Creative Workshop
-20:57:30 | Amina Bekova enrolled in CS101
-20:57:30 | Dias Alimov enrolled in CS101
-20:57:30 | Sara Omarova enrolled in ART101
-20:57:30 | Amina Bekova enrolled in MAT101
-20:57:30 | Project: 94.0 for Amina Bekova / CS101
-20:57:30 | Quiz: 82.0 for Amina Bekova / CS101
-20:57:30 | Project: 85.0 for Dias Alimov / CS101
-20:57:30 | Portfolio: 91.0 for Sara Omarova / ART101
+07:57:23 | Dana Karimova registered as TEACHER
+07:57:23 | Arman Sadykov registered as TEACHER
+07:57:23 | Amina Bekova registered as STUDENT
+07:57:23 | Dias Alimov registered as STUDENT
+07:57:23 | Sara Omarova registered as STUDENT
+07:57:23 | CS101 created: Computer Science
+07:57:23 | MAT101 created: Applied Mathematics
+07:57:23 | ART101 created: Creative Workshop
+07:57:23 | CS201 created: Algorithms
+07:57:23 | Amina Bekova enrolled in CS101
+07:57:23 | Dias Alimov enrolled in CS101
+07:57:23 | Sara Omarova enrolled in ART101
+07:57:23 | Amina Bekova enrolled in MAT101
+07:57:23 | Project: 94.0 for Amina Bekova / CS101
+07:57:23 | Quiz: 82.0 for Amina Bekova / CS101
+07:57:23 | Project: 85.0 for Dias Alimov / CS101
+07:57:23 | Portfolio: 91.0 for Sara Omarova / ART101

@@ -22,18 +22,22 @@ sh build.sh test
 sh build.sh demo
 ```
 
-The program starts with fictional sample records: three students, two teachers and three courses. Use `0` to exit. Changes stay in memory for the current session. Menu option `11` exports the gradebook as a CSV file; it is a report, not a restorable backup.
+The program starts with fictional sample records: three students, two teachers and four courses. Use `0` to exit. Changes stay in memory for the current session. Menu option `11` exports the gradebook as a CSV file; it is a report, not a restorable backup.
 
 ## Features
 
 - Register students and teachers with unique IDs.
-- Create courses with a teacher, capacity and grading policy.
-- Enroll students, preventing duplicate enrollments and overfilled courses.
+- Create courses with a teacher and optional capacity, grading policy, semester, credits and prerequisites.
+- Enroll students, preventing duplicate enrollments, overfilled courses and enrollment without passed prerequisites.
 - Record assessments with scores from 0 to 100 and positive weights.
 - Calculate weighted letter grades or pass/fail results.
+- Issue a student report with results and earned credits.
+- Deliver notifications to the inbox of a student (new grade, issued report) or a teacher (new student in a course).
 - View an activity log using UTC+05:00.
 - Switch between viewer, registrar, grading and combined administrator permissions.
 - Export grades to CSV with escaped fields and spreadsheet formula protection.
+
+IDs and course codes are stored in upper case, and text commands ignore letter case, so `s001` and `S001` mean the same student.
 
 Access modes demonstrate permission composition. They are not user authentication: anyone running this local demo can change the mode. The grading role is school-wide, not restricted to an assigned teacher.
 
@@ -41,32 +45,38 @@ Access modes demonstrate permission composition. They are not user authenticatio
 
 | Pattern | Classes | Responsibility | Module owner |
 | --- | --- | --- | --- |
-| Factory Method | `PersonCreator`, `StudentCreator`, `TeacherCreator` | Create the correct person subtype | adilzhandev |
-| Decorator | `Access`, `RegistrarAccess`, `GradingAccess` | Add permissions to a basic viewer | adilzhandev |
-| Builder | `Course.Builder` | Construct a validated, immutable course | Nurlan-byte |
-| Strategy | `GradingStrategy`, `WeightedGrading`, `PassFailGrading` | Choose a course's grading policy | Nurlan-byte |
-| Observer | `EventBus`, `SchoolListener`, `ActivityLog`, `StudentNotifier` | Deliver successful operation events to listeners; notify students about new grades | Asylstyle |
-| Facade | `SchoolFacade` | Coordinate validation, storage, permissions and notifications | Asylstyle |
+| Factory Method | `PersonCreator`, `StudentCreator`, `TeacherCreator`, `PersonRegistry` | Create the correct person subtype; the registry keeps one creator per role | adilzhandev |
+| Decorator | `Access`, `RegistrarAccess`, `GradingAccess`, `AccessModes` | Add permissions to a basic viewer | adilzhandev |
+| Builder | `Course.Builder` | Construct a validated, immutable course with optional values | Nurlan-byte |
+| Strategy | `GradingStrategy`, `WeightedGrading`, `PassFailGrading`, `GradingPolicies` | Choose a course's grading policy | Nurlan-byte |
+| Observer | `EventBus`, `SchoolListener`, `ActivityLog`, `StudentNotifier`, `TeacherNotifier`, `Inbox` | Deliver successful operation events to listeners | Asylstyle |
+| Facade | `SchoolFacade` over `PersonRegistry`, `EnrollmentService`, `GradingService` | Check permissions, coordinate the services and publish events | Asylstyle |
 
-The console calls the facade. The facade uses factories to register people and accepts courses built with the builder. Every mutation checks decorated permissions. Successful changes publish events to the activity log, and a recorded grade also produces a student notification. Gradebook results use the strategy stored on each course.
+The console calls the facade. The facade checks the decorated permission, then gives the work to three services: the person registry uses creators, the enrollment service keeps courses built with the builder, and the grading service uses the strategy stored on each course. Successful operations publish events to the activity log and to the notifiers.
 
 ## Grading
 
-The weighted score is `sum(score * weight) / sum(weight)`. Weights are relative and do not need to total 100. An ungraded enrollment displays **Not graded**, rather than zero. Letter boundaries are A >= 90, B >= 80, C >= 70, D >= 60, otherwise F. Pass/fail uses a threshold of 60. Labels use the unrounded score; display values are rounded.
+The weighted score is `sum(score * weight) / sum(weight)`. Weights are relative and do not need to total 100. An ungraded enrollment displays **Not graded**, rather than zero. The score is rounded to one decimal place before the label is chosen, so the label always matches the displayed score. Letter boundaries are A >= 90, B >= 80, C >= 70, D >= 60, otherwise F. Pass/fail uses a threshold of 60.
 
 For example, a project scored 94 with weight 60 and a quiz scored 82 with weight 40 produce **89.2 / B**.
 
 ## Project layout
 
 ```text
-src/main/java/school/   Application and pattern implementations
-src/test/java/school/   Dependency-free automated tests
-docs/                  UML, requirements and project report
-build.ps1              Windows build, test and run commands
-build.sh               Linux/macOS build, test and run commands
+src/main/java/school/           Console application and sample data
+src/main/java/school/core/      Facade, services, course, enrollment, report, CSV export
+src/main/java/school/people/    People, creators and the person registry
+src/main/java/school/access/    Permissions, access decorators and access modes
+src/main/java/school/grading/   Assessments, grading strategies and their registry
+src/main/java/school/events/    Event bus, listeners, notifiers and inbox
+src/main/java/school/common/    Shared validation
+src/test/java/school/           Dependency-free automated tests
+docs/                           UML, requirements and project report
+build.ps1                       Windows build, test and run commands
+build.sh                        Linux/macOS build, test and run commands
 ```
 
-The test runner covers validation, permission checks, grading boundaries, course capacity, immutable collection snapshots, observer failures, CSV export and console workflows. It throws an error and exits unsuccessfully when a check fails; it does not depend on Java assertions being enabled.
+The test runner covers validation, permission checks, grading boundaries, course capacity, prerequisites, immutable collection snapshots, observer failures, notifications, the student report, CSV export and console workflows. It throws an error and exits unsuccessfully when a check fails; it does not depend on Java assertions being enabled.
 
 See [requirements](docs/requirements.md), [domain rules](docs/domain.md) and [UML overview](docs/architecture.md).
 
