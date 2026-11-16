@@ -1,5 +1,13 @@
 package school;
 
+import school.access.Access;
+import school.access.AccessDeniedException;
+import school.access.AccessModes;
+import school.access.GradingAccess;
+import school.access.Permission;
+import school.access.ReadOnlyAccess;
+import school.access.RegistrarAccess;
+
 final class AccessTests {
     static void run() {
         Access viewer = new ReadOnlyAccess();
@@ -7,12 +15,24 @@ final class AccessTests {
         Access grading = new GradingAccess(viewer);
         Access admin = new GradingAccess(registrar);
         Checks.equal(true, viewer.allows(Permission.VIEW));
-        Checks.fails(SecurityException.class, () -> viewer.require(Permission.ENROLL));
+        Checks.fails(AccessDeniedException.class, () -> viewer.require(Permission.ENROLL));
         Checks.equal(true, registrar.allows(Permission.MANAGE_PEOPLE));
         Checks.equal(false, registrar.allows(Permission.RECORD_GRADES));
         Checks.equal(true, grading.allows(Permission.RECORD_GRADES));
         Checks.equal(false, grading.allows(Permission.MANAGE_COURSES));
-        for (Permission p : Permission.values()) Checks.equal(true, admin.allows(p));
+        for (Permission permission : Permission.values()) {
+            Checks.equal(true, admin.allows(permission));
+        }
         Checks.equal(false, viewer.allows(Permission.RECORD_GRADES));
+
+        Checks.equal("Viewer", AccessModes.viewer().label());
+        Checks.equal("Viewer + Registrar", AccessModes.byName("registrar").label());
+        Checks.equal("Viewer + Grading", AccessModes.byName("grading").label());
+        Checks.equal("Viewer + Registrar + Grading", AccessModes.admin().label());
+        for (Permission permission : Permission.values()) {
+            Checks.equal(true, AccessModes.byName("admin").allows(permission));
+        }
+        Checks.equal("viewer/registrar/grading/admin", AccessModes.names());
+        Checks.fails(IllegalArgumentException.class, () -> AccessModes.byName("director"));
     }
 }
