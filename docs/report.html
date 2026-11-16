@@ -43,6 +43,9 @@
   .toc li { margin-bottom: 4pt; }
   .toc .l2 { padding-left: 18pt; }
   h1.first { break-before: auto; }
+  @page wide { size: A4 landscape; margin: 15mm 18mm; }
+  .landscape { page: wide; }
+  .landscape figure img { max-height: 150mm; }
 </style>
 </head>
 <body>
@@ -154,18 +157,18 @@ src/test/java/school/           tests (12 files)
 docs/                           report, UML sources, diagrams, screenshots
 build.ps1, build.sh             build scripts for Windows and for Linux and macOS
 .github/workflows/              automatic build and test on GitHub</pre>
-<p>The application has 42 classes in seven packages. The project needs only JDK 17 or newer. On Windows the commands are <code>./build.ps1 -Run</code> to start the program and <code>./build.ps1 -Test</code> to run the tests. On Linux and macOS the commands are <code>sh build.sh run</code> and <code>sh build.sh test</code>.</p>
+<p>The application has 44 classes in seven packages. The project needs only JDK 17 or newer. On Windows the commands are <code>./build.ps1 -Run</code> to start the program and <code>./build.ps1 -Test</code> to run the tests. On Linux and macOS the commands are <code>sh build.sh run</code> and <code>sh build.sh test</code>.</p>
 
 <h1>4. Architecture</h1>
-<p>The program has three levels. The first level is the console (<code>ConsoleApp</code>, <code>ConsoleInput</code>). It only reads the input and prints the result. The second level is <code>SchoolFacade</code>. It receives all requests from the console, checks the permission and gives the work to three services: <code>PersonRegistry</code>, <code>EnrollmentService</code> and <code>GradingService</code>. After a successful operation it publishes an event. The third level contains the domain classes: people, courses, enrollments, assessments, grading policies, permissions and events.</p>
+<p>The program has three levels. The first level is the console (<code>ConsoleApp</code>, <code>ConsoleInput</code>). It only reads the input and prints the result. The second level is <code>SchoolFacade</code>. It receives all requests from the console, checks the permission and gives the work to four services: <code>PersonRegistry</code>, <code>CourseCatalog</code>, <code>EnrollmentService</code> and <code>GradingService</code>. After a successful operation it publishes an event. The third level contains the domain classes: people, courses, enrollments, assessments, grading policies, permissions and events.</p>
 <p>The classes are divided into packages by their subject (Figure 1). The package <code>school.core</code> depends on the other packages, and they do not depend on it. The small package <code>school.common</code> has only the class <code>Validation</code> with the checks of texts, IDs and positive numbers that are used everywhere.</p>
 <figure><img src="images/packages.png" alt="Packages" style="max-width:100%">
 <div class="legend"><b>Legend:</b><span class="it"><svg width="26" height="14" viewBox="0 0 26 14"><path d="M1 4 H10 V1 H1 Z M1 4 H25 V13 H1 Z" fill="#fff" stroke="#000" stroke-width="0.8"/></svg>package</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1" stroke-dasharray="4 2.5"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>dependency (classes of one package use classes of the other)</span></div>
 <figcaption>Figure 1. Packages of the application and the main classes in them</figcaption></figure>
-<p>Figure 2 shows the main classes and the relations between them. All six patterns are visible on this diagram: the creators of people (Factory Method), the access classes (Decorator), <code>Course.Builder</code> (Builder), <code>GradingStrategy</code> with two implementations (Strategy), <code>EventBus</code> with listeners (Observer) and <code>SchoolFacade</code> with its three services (Facade).</p>
-<figure class="wide"><img src="images/class-overview.png" alt="Class diagram">
-<div class="legend"><b>Legend:</b><span class="it"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#ADD1B2" stroke="#000" stroke-width="0.8"/><text x="7" y="10" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="bold">C</text></svg>class</span><span class="it"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#B4A7E5" stroke="#000" stroke-width="0.8"/><text x="7" y="10" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="bold">I</text></svg>interface</span><span class="it"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#A9DCDF" stroke="#000" stroke-width="0.8"/><text x="7" y="10" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="bold">A</text></svg>abstract class</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="29" y2="6" stroke="#000" stroke-width="1"/><polygon points="29,1.5 38.5,6 29,10.5" fill="#fff" stroke="#000" stroke-width="1"/></svg>inheritance (extends)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="29" y2="6" stroke="#000" stroke-width="1" stroke-dasharray="4 2.5"/><polygon points="29,1.5 38.5,6 29,10.5" fill="#fff" stroke="#000" stroke-width="1"/></svg>realization (implements)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>association (has a reference)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1" stroke-dasharray="4 2.5"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>dependency (uses or creates)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><polygon points="2,6 9,2 16,6 9,10" fill="#fff" stroke="#000" stroke-width="1"/><line x1="16" y1="6" x2="38" y2="6" stroke="#000" stroke-width="1"/></svg>aggregation (holds objects)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><polygon points="2,6 9,2 16,6 9,10" fill="#000" stroke="#000" stroke-width="1"/><line x1="16" y1="6" x2="38" y2="6" stroke="#000" stroke-width="1"/></svg>composition (owns the part)</span><span class="it"><span class="t">0..*, 1..*</span> number of objects</span><span class="it"><span class="t">+</span> public</span><span class="it"><span class="t">&minus;</span> private</span><span class="it"><span class="t">~</span> package-private</span><span class="it"><i>italic</i> &ndash; abstract</span></div>
-<figcaption>Figure 2. Class diagram of the application</figcaption></figure>
+<p>Figure 2 shows the main classes and the relations between them. All six patterns are visible on this diagram: the creators of people (Factory Method), the access classes, including <code>AuditedAccess</code> that logs refused checks (Decorator), <code>Course.Builder</code> (Builder), <code>GradingStrategy</code> with two implementations (Strategy), <code>EventBus</code> with listeners (Observer) and <code>SchoolFacade</code> with its four services (Facade).</p>
+<div class="landscape"><figure class="wide"><img src="images/class-overview.png" alt="Class diagram">
+<div class="legend"><b>Legend:</b><span class="it"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#ADD1B2" stroke="#000" stroke-width="0.8"/><text x="7" y="10" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="bold">C</text></svg>class</span><span class="it"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#B4A7E5" stroke="#000" stroke-width="0.8"/><text x="7" y="10" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="bold">I</text></svg>interface</span><span class="it"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#A9DCDF" stroke="#000" stroke-width="0.8"/><text x="7" y="10" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="bold">A</text></svg>abstract class</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="29" y2="6" stroke="#000" stroke-width="1"/><polygon points="29,1.5 38.5,6 29,10.5" fill="#fff" stroke="#000" stroke-width="1"/></svg>inheritance (extends)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="29" y2="6" stroke="#000" stroke-width="1" stroke-dasharray="4 2.5"/><polygon points="29,1.5 38.5,6 29,10.5" fill="#fff" stroke="#000" stroke-width="1"/></svg>realization (implements)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>association (has a reference)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1" stroke-dasharray="4 2.5"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>dependency (uses or creates)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><polygon points="2,6 9,2 16,6 9,10" fill="#fff" stroke="#000" stroke-width="1"/><line x1="16" y1="6" x2="38" y2="6" stroke="#000" stroke-width="1"/></svg>aggregation (holds objects)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><polygon points="2,6 9,2 16,6 9,10" fill="#000" stroke="#000" stroke-width="1"/><line x1="16" y1="6" x2="38" y2="6" stroke="#000" stroke-width="1"/></svg>composition (owns the part)</span><span class="it"><span class="t">+</span> public</span><span class="it"><span class="t">&minus;</span> private</span><span class="it"><span class="t">~</span> package-private</span><span class="it"><i>italic</i> &ndash; abstract</span></div>
+<figcaption>Figure 2. Class diagram of the application</figcaption></figure></div>
 
 <h1 class="pb">5. Design patterns</h1>
 <p>This section describes each pattern in the same order: the problem, how the pattern solves it in our project, the UML diagram, the code and the place where the pattern is used.</p>
@@ -258,12 +261,13 @@ build.ps1, build.sh             build scripts for Windows and for Linux and macO
 
 <h2>5.2 Decorator (Kuandykov Adilzhan)</h2>
 <h3>Problem</h3>
-<p>Different users of the system can do different things. A viewer can only read. A registrar adds people and courses and enrolls students. A grading operator records grades. An administrator can do everything. If we make a separate class for every combination, the number of classes grows quickly, and a new permission set needs a new class again.</p>
+<p>Different users of the system can do different things. A viewer can only read. A registrar adds people and courses and enrolls students. A grading operator records grades, completes courses and issues reports. An administrator can do everything. If we make a separate class for every combination, the number of classes grows quickly, and a new permission set needs a new class again.</p>
 <h3>Solution</h3>
 <p>The interface <code>Access</code> answers the question "is this permission allowed?". The basic object is <code>ReadOnlyAccess</code>, it allows only viewing. <code>AccessDecorator</code> implements the same interface and keeps another <code>Access</code> object inside. <code>RegistrarAccess</code> and <code>GradingAccess</code> extend the decorator. Each of them adds its own permissions and passes all other questions to the wrapped object. Because decorators and the basic object have the same interface, they can be put one into another in any order.</p>
+<p>A decorator can also add behaviour instead of permissions. <code>AuditedAccess</code> does not allow anything new: it asks the wrapped object and, when the answer is "no", reports the refused permission. The console wraps the current mode in this decorator, so every refused action appears in the activity log.</p>
 <p>The method <code>require</code> throws our own exception <code>AccessDeniedException</code> when the permission is missing. The class <code>AccessModes</code> is the only place where the ready combinations are built: viewer, registrar, grading and admin.</p>
 <figure><img src="images/decorator.png" alt="Decorator" style="max-width:88%">
-<div class="legend"><b>Legend:</b><span class="it"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#ADD1B2" stroke="#000" stroke-width="0.8"/><text x="7" y="10" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="bold">C</text></svg>class</span><span class="it"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#B4A7E5" stroke="#000" stroke-width="0.8"/><text x="7" y="10" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="bold">I</text></svg>interface</span><span class="it"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#A9DCDF" stroke="#000" stroke-width="0.8"/><text x="7" y="10" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="bold">A</text></svg>abstract class</span><span class="it"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#EB937F" stroke="#000" stroke-width="0.8"/><text x="7" y="10" text-anchor="middle" font-family="Courier New, monospace" font-size="9" font-weight="bold">E</text></svg>enumeration</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="29" y2="6" stroke="#000" stroke-width="1"/><polygon points="29,1.5 38.5,6 29,10.5" fill="#fff" stroke="#000" stroke-width="1"/></svg>inheritance (extends)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="29" y2="6" stroke="#000" stroke-width="1" stroke-dasharray="4 2.5"/><polygon points="29,1.5 38.5,6 29,10.5" fill="#fff" stroke="#000" stroke-width="1"/></svg>realization (implements)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><polygon points="2,6 9,2 16,6 9,10" fill="#fff" stroke="#000" stroke-width="1"/><line x1="16" y1="6" x2="38" y2="6" stroke="#000" stroke-width="1"/></svg>aggregation (holds objects)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1" stroke-dasharray="4 2.5"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>dependency (uses or creates)</span><span class="it"><span class="t">+</span> public</span><span class="it"><span class="t">#</span> protected</span><span class="it"><u>underlined</u> &ndash; static</span><span class="it"><i>italic</i> &ndash; abstract</span></div>
+<div class="legend"><b>Legend:</b><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="29" y2="6" stroke="#000" stroke-width="1"/><polygon points="29,1.5 38.5,6 29,10.5" fill="#fff" stroke="#000" stroke-width="1"/></svg>inheritance (extends)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="29" y2="6" stroke="#000" stroke-width="1" stroke-dasharray="4 2.5"/><polygon points="29,1.5 38.5,6 29,10.5" fill="#fff" stroke="#000" stroke-width="1"/></svg>realization (implements)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><polygon points="2,6 9,2 16,6 9,10" fill="#fff" stroke="#000" stroke-width="1"/><line x1="16" y1="6" x2="38" y2="6" stroke="#000" stroke-width="1"/></svg>aggregation (holds objects)</span><span class="it"><svg width="40" height="12" viewBox="0 0 40 12"><line x1="2" y1="6" x2="32" y2="6" stroke="#000" stroke-width="1" stroke-dasharray="4 2.5"/><polygon points="30,2.5 39,6 30,9.5 32.5,6" fill="#000"/></svg>dependency (uses or creates)</span><span class="it"><span class="t">1</span> exactly one object</span><span class="it"><span class="t">+</span> public</span><span class="it"><span class="t">&minus;</span> private</span><span class="it"><span class="t">#</span> protected</span><span class="it"><u>underlined</u> &ndash; static</span><span class="it"><i>italic</i> &ndash; abstract</span></div>
 <figcaption>Figure 4. Decorator: access permissions</figcaption></figure>
 <h3>Code</h3>
 <div class="listing"><pre>public interface Access {
@@ -311,16 +315,10 @@ build.ps1, build.sh             build scripts for Windows and for Linux and macO
 
     @Override
     public boolean allows(Permission permission) {
-        if (permission == Permission.MANAGE_PEOPLE) {
-            return true;
-        }
-        if (permission == Permission.MANAGE_COURSES) {
-            return true;
-        }
-        if (permission == Permission.ENROLL) {
-            return true;
-        }
-        return super.allows(permission);
+        return switch (permission) {
+            case MANAGE_PEOPLE, MANAGE_COURSES, ENROLL -&gt; true;
+            default -&gt; super.allows(permission);
+        };
     }
 
     @Override
@@ -335,17 +333,33 @@ build.ps1, build.sh             build scripts for Windows and for Linux and macO
 
     @Override
     public boolean allows(Permission permission) {
-        if (permission == Permission.RECORD_GRADES) {
-            return true;
-        }
-        return super.allows(permission);
+        return switch (permission) {
+            case RECORD_GRADES, ISSUE_REPORTS -&gt; true;
+            default -&gt; super.allows(permission);
+        };
     }
 
     @Override
     public String label() {
         return wrapped.label() + " + Grading";
     }
-}</pre><div class="cap">Listing 8. GradingAccess.java, a concrete decorator</div></div>
+}</pre><pre>public final class AuditedAccess extends AccessDecorator {
+    private final Consumer&lt;String&gt; auditLog;
+
+    public AuditedAccess(Access wrapped, Consumer&lt;String&gt; auditLog) {
+        super(wrapped);
+        this.auditLog = Objects.requireNonNull(auditLog);
+    }
+
+    @Override
+    public boolean allows(Permission permission) {
+        boolean allowed = super.allows(permission);
+        if (!allowed) {
+            auditLog.accept(label() + " was denied " + permission);
+        }
+        return allowed;
+    }
+}</pre><div class="cap">Listing 8. GradingAccess.java and AuditedAccess.java, concrete decorators</div></div>
 <h3>Where it is used</h3>
 <p>The administrator is not a separate class. It is a viewer wrapped in two decorators. All modes are built in <code>AccessModes</code> and are found by name:</p>
 <div class="listing long"><pre>public final class AccessModes {
@@ -389,10 +403,14 @@ build.ps1, build.sh             build scripts for Windows and for Linux and macO
         return String.join("/", MODES.keySet());
     }
 }</pre><div class="cap">Listing 9. AccessModes.java builds the modes from decorators</div></div>
-<p>The menu command "Access mode" only asks the name of the mode. The list of names in the prompt also comes from <code>AccessModes</code>, so a new mode does not change the console:</p>
+<p>The menu command "Access mode" only asks the name of the mode. The list of names in the prompt also comes from <code>AccessModes</code>, so a new mode does not change the console. The chosen mode is wrapped in <code>AuditedAccess</code>, which sends refused checks to the facade, and the facade publishes them as <code>ACCESS_DENIED</code> events:</p>
 <div class="listing"><pre>private void changeAccess() {
-    access = AccessModes.byName(input.command("Mode (" + AccessModes.names() + ")"));
-}</pre><div class="cap">Listing 10. ConsoleApp.changeAccess</div></div>
+    access = audited(AccessModes.byName(input.command("Mode (" + AccessModes.names() + ")")));
+}
+
+private Access audited(Access mode) {
+    return new AuditedAccess(mode, school::reportDeniedAccess);
+}</pre><div class="cap">Listing 10. ConsoleApp.changeAccess and ConsoleApp.audited</div></div>
 <p>The label of the access object is also built by the decorators. That is why the menu shows "Viewer + Registrar + Grading" for the administrator and "Viewer + Grading" for the grading operator (Figure 18).</p>
 
 <h2>5.3 Builder (Yussupov Nurlan)</h2>

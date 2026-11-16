@@ -1,53 +1,97 @@
-@startuml decorator
-!pragma layout smetana
-title Decorator - access permissions
-skinparam classAttributeIconSize 0
+@startuml DecoratorStrictUML
+
+' === Strict Academic UML 2.5 Styling ===
+skinparam linetype ortho
+skinparam monochrome true
 skinparam shadowing false
+skinparam roundcorner 0
+skinparam nodesep 65
+skinparam ranksep 65
+skinparam classAttributeIconSize 0
+skinparam defaultFontName "Arial"
+skinparam defaultFontSize 12
+
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #000000
+  BorderThickness 1
+}
+
+skinparam arrow {
+  Color #000000
+  Thickness 1
+}
+
+title Decorator — Access Control
 
 interface Access {
-  +allows(p: Permission): boolean
-  +label(): String
-  +require(p: Permission)
+  + allows(p : Permission) : boolean
+  + label() : String
+  + require(p : Permission) : void
 }
+
 class ReadOnlyAccess {
-  +allows(p: Permission): boolean
-  +label(): String
+  + allows(p : Permission) : boolean
+  + label() : String
 }
+
 abstract class AccessDecorator {
-  #wrapped: Access
-  +allows(p: Permission): boolean
-  +label(): String
+  # wrapped : Access
+  # AccessDecorator(wrapped : Access)
+  + allows(p : Permission) : boolean
+  + label() : String
 }
+
 class RegistrarAccess {
-  +allows(p: Permission): boolean
-  +label(): String
+  + RegistrarAccess(wrapped : Access)
+  + allows(p : Permission) : boolean
+  + label() : String
 }
+
 class GradingAccess {
-  +allows(p: Permission): boolean
-  +label(): String
+  + GradingAccess(wrapped : Access)
+  + allows(p : Permission) : boolean
+  + label() : String
 }
+
+class AuditedAccess {
+  - auditLog : Consumer<String>
+  + AuditedAccess(wrapped : Access, auditLog : Consumer<String>)
+  + allows(p : Permission) : boolean
+}
+
 enum Permission {
   VIEW
   MANAGE_PEOPLE
   MANAGE_COURSES
   ENROLL
   RECORD_GRADES
+  ISSUE_REPORTS
 }
-class AccessModes {
-  +{static} viewer(): Access
-  +{static} registrar(): Access
-  +{static} grading(): Access
-  +{static} admin(): Access
-  +{static} byName(name: String): Access
-}
-class AccessDeniedException
 
+class AccessModes {
+  + {static} viewer() : Access
+  + {static} registrar() : Access
+  + {static} grading() : Access
+  + {static} admin() : Access
+  + {static} byName(name : String) : Access
+  + {static} names() : String
+}
+
+class AccessDeniedException <<exception>> {
+  + AccessDeniedException(permission : Permission)
+}
+
+' === Strict UML 2.5 Relationships ===
 Access <|.. ReadOnlyAccess
 Access <|.. AccessDecorator
-AccessDecorator o-- Access : wrapped
+AccessDecorator o--> "1" Access : #wrapped
 AccessDecorator <|-- RegistrarAccess
 AccessDecorator <|-- GradingAccess
+AccessDecorator <|-- AuditedAccess
+
 Access ..> Permission
-Access ..> AccessDeniedException : throws
-AccessModes ..> Access : builds
+Access ..> AccessDeniedException
+AccessModes ..> Access : <<create>>
+
 @enduml
